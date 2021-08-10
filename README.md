@@ -56,7 +56,7 @@ require_once("vendor/autoload.php");
 ```
 Инициализация класса
 ```php
-$ml = new /FYN/FMail();
+$ml = new FYN\FMail();
 ```
 
 Внимание!!! В классе есть значения используемые по умолчанию. Изменение всех параметров по умолчанию можно произвести в блоке переменных "Переменные настройки скрипта (класса)". Или через специальные функции класса которые будут описаны ниже.
@@ -266,7 +266,7 @@ $text = $ml->getSubjectDecode($text);
 
 ```php
 require_once("FMail.php");
-$ml = new /FYN/FMail();
+$ml = new FYN\FMail();
 $ml->setMailUse(false);
 $ml->setServer('your_mail_server.com');
 $ml->setAuth('LOGIN');

@@ -19,7 +19,7 @@
  * | Author: Yuri Frantsevich <fyn@tut.by>                                 |
  * +-----------------------------------------------------------------------+
  *
- * $Id: FMail.php, v 6.0.0 2021/08/10 12:27:11
+ * $Id: FMail.php, v 6.0.1 2021/08/10 12:27:11
  */
 
 /**
@@ -27,7 +27,7 @@
  *
  * @name    /FYN/FMail
  * @access  public
- * @version 6.0.0 (ru)
+ * @version 6.0.1 (ru)
  * @author  Yuri Frantsevich <frantsevich@gmail.com>
  * @charset UTF-8
  *
