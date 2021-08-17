@@ -19,7 +19,7 @@
  * | Author: Yuri Frantsevich <fyn@tut.by>                                 |
  * +-----------------------------------------------------------------------+
  *
- * $Id: FMail.php, v 6.0.1 2021/08/10 12:27:11
+ * $Id: FMail.php, v 6.0.2 2021/08/17 12:54:18
  */
 
 /**
@@ -27,7 +27,7 @@
  *
  * @name    /FYN/FMail
  * @access  public
- * @version 6.0.1 (ru)
+ * @version 6.0.2 (ru)
  * @author  Yuri Frantsevich <frantsevich@gmail.com>
  * @charset UTF-8
  *
@@ -36,6 +36,8 @@
  */
 
 namespace FYN;
+
+use FYN\Base;
 
 class FMail {
 
@@ -1667,8 +1669,8 @@ class FMail {
         if (!$this->socket) {
             $pr_errno = print_r($errno,true);
             $pr_errstr = print_r($errstr, true);
-            $pr_errno = $this->convertLine($pr_errno);
-            $pr_errstr = $this->convertLine($pr_errstr);
+            $pr_errno = Base::convertLine($pr_errno);
+            $pr_errstr = Base::convertLine($pr_errstr);
             $this->getError('getSocket', __LINE__, 'Unable to connect to: '.$this->server.':'.$this->port."\n".$pr_errno."\n".$pr_errstr);
             return false;
         }
@@ -2113,7 +2115,7 @@ class FMail {
             $cod = '';
             if (function_exists("mb_detect_encoding")) $cod = @mb_detect_encoding($line, array('utf-8', 'ascii', 'cp1251', 'KOI8-R', 'CP866', 'KOI8-U'), true);
             if (!$cod && file_exists('NetContent.php')) {
-                $cod = $this->detect_encoding($line);
+                $cod = Base::detect_encoding($line);
             }
             elseif (!$cod) $cod = @mb_detect_encoding($line, mb_detect_order(), true);
             if ($cod && strtoupper($cod) != strtoupper($enc)) $line = @mb_convert_encoding($line, strtoupper($enc), strtoupper($cod));
@@ -2325,56 +2327,5 @@ class FMail {
             fputs($this->socket, "QUIT\n");
             fclose($this->socket);
         }
-    }
-
-    /**
-     * Конвертирование текста в заданную кодировку
-     * @param string $line - строка с текстом
-     * @param string $enc - заданная кодировка, utf-8 по умолчанию
-     * @return string
-     */
-    private function convertLine ($line, $enc = 'utf-8') {
-        if (!$line) return $line;
-        $list = array('utf-8', 'ascii', 'cp1251', 'KOI8-R', 'CP866', 'KOI8-U');
-        $cod = '';
-        if (function_exists("mb_detect_encoding")) $cod = @mb_detect_encoding($line, $list, true);
-        if (!$cod) $cod = $this->detect_encoding($line);
-        if ($cod != $enc) $line = @mb_convert_encoding($line, $enc, $cod);
-        return $line;
-    }
-
-    /**
-     * Определение кодировки текста, если не отработала функция mb_detect_encoding
-     * Используем в функции convertLine
-     * @param $string - строка с текстом
-     * @param int $pattern_size - максимальная длина строки для парсинга
-     * @return mixed|string
-     */
-    public function detect_encoding ($string, $pattern_size = 50) {
-        $list = array('utf-8', 'ascii', 'cp1251', 'KOI8-R', 'CP866', 'KOI8-U', 'ISO-8859-1');
-        $c = strlen($string);
-        if ($c > $pattern_size) {
-            $string = substr($string, floor(($c - $pattern_size) /2), $pattern_size);
-            $c = $pattern_size;
-        }
-
-        $reg1 = '/(\xE0|\xE5|\xE8|\xEE|\xF3|\xFB|\xFD|\xFE|\xFF)/i';
-        $reg2 = '/(\xE1|\xE2|\xE3|\xE4|\xE6|\xE7|\xE9|\xEA|\xEB|\xEC|\xED|\xEF|\xF0|\xF1|\xF2|\xF4|\xF5|\xF6|\xF7|\xF8|\xF9|\xFA|\xFC)/i';
-
-        $mk = 10000;
-        $enc = 'utf-8';
-        foreach ($list as $item) {
-            $sample1 = @iconv($item, 'cp1251', $string);
-            $gl = @preg_match_all($reg1, $sample1, $arr);
-            $sl = @preg_match_all($reg2, $sample1, $arr);
-            if (!$gl || !$sl) continue;
-            $k = abs(3 - ($sl / $gl));
-            $k += $c - $gl - $sl;
-            if ($k < $mk) {
-                $enc = $item;
-                $mk = $k;
-            }
-        }
-        return $enc;
     }
 }
