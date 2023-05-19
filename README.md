@@ -1,6 +1,10 @@
 # Fmail
 PHP Mail sender script
 
+![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-v6.0.3-blue.svg)
+![PHP](https://img.shields.io/badge/php-v5.5_--_v8-blueviolet.svg)
+
 Описание и примеры использования PHP класса отправки и получения почты FMail
 
 # Содержание

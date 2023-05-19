@@ -2,7 +2,7 @@
 /**
  * INFO
  * +-----------------------------------------------------------------------+
- * | PHP Version 5 - 7                                                     |
+ * | PHP Version 5 - 8                                                     |
  * +-----------------------------------------------------------------------+
  * | PHP Mail sender script                                                |
  * | (русская версия)                                                      |
@@ -19,7 +19,7 @@
  * | Author: Yuri Frantsevich <fyn@tut.by>                                 |
  * +-----------------------------------------------------------------------+
  *
- * $Id: FMail.php, v 6.0.2 2021/08/17 12:54:18
+ * $Id: FMail.php, v 6.0.3 2023/05/19 16:30:18
  */
 
 /**
@@ -27,12 +27,12 @@
  *
  * @name    /FYN/FMail
  * @access  public
- * @version 6.0.2 (ru)
+ * @version 6.0.3 (ru)
  * @author  Yuri Frantsevich <frantsevich@gmail.com>
  * @charset UTF-8
  *
  * Date 09/08/2003
- * @copyright 2003-2021
+ * @copyright 2003-2023
  */
 
 namespace FYN;
@@ -2301,13 +2301,16 @@ class FMail {
      */
     public function clearTo () {
         $this->to = array();
+        $this->to_now = array();
+        $this->to_sock = array();
     }
 
     /**
      * Очистка списка скрытых получателей
      */
     public function clearBcc () {
-        $this->to = array();
+        $this->bcc = array();
+        $this->bcc_sock = array();
     }
 
     /**
