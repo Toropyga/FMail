@@ -5,106 +5,110 @@ PHP Mail sender script
 ![Version](https://img.shields.io/badge/version-v6.0.5-blue.svg)
 ![PHP](https://img.shields.io/badge/php-v5.5_--_v8-blueviolet.svg)
 
-Description and examples of using PHP class for sending and receiving mail FMail
+Описание и примеры использования PHP класса отправки и получения почты FMail
 
 # Содержание
 
-- [General concepts](#General-concepts)
-- [Class capabilities](#Class-capabilities)
-- [Description](#Description)
+- [Общие понятия](#общие-понятия)
+- [Возможности класса FMail](#возможности-класса-FMail)
+- [Описание работы](#описание-работы)
 - [Пример использования](#пример-использования)
 
-# General concepts
-The FMail class is designed to send and receive email messages using PHP.
-This class is not a full-fledged email program for working with email!
-PHP version 4 or higher is required for operation.
+# Общие понятия
+Класс FMail предназначен для отправки и получения электронных почтовых сообщений средствами PHP.
+Данный класс не является полноценной почтовой программой для работы с электронной почтой!
+Для работы необходимо наличие PHP версии 4 и выше.
 
-# Class capabilities
-Allows sending emails using the standard PHP mail() function, and also without using this function directly connecting to the specified mail server via a socket.
+# Возможности класса FMail
+Позволяет отправлять письма используя стандартную функцию PHP mail(), а также не используя данную функции напрямую подключаться к указанному почтовому серверу через сокет.
 
-Allows receiving emails using the PHP IMAP library
+Позволяет получать письма используя библиотеку PHP IMAP
 
-Supports authorization on mail servers using the PLAIN and LOGIN methods.
+Поддерживает авторизацию на почтовых серверах методом PLAIN и LOGIN.
 
-Supported text encodings (charset) ISO-8859-1, UTF-8, WINDOWS-1251 and KOI8-R.
+Поддерживаются текстовые кодировки (charset) ISO-8859-1, UTF-8, WINDOWS-1251 и KOI8-R.
 
-Supports sending messages in text and HTML format.
+Поддерживаются отправка сообщений в текстовом и HTML формате.
 
-Sending a letter to multiple recipients.
+Отправка письма нескольким получателям.
 
-Support for limiting the number of recipients of one letter, i.e. if several recipients are specified and the limit for the number of recipients is 1, then each recipient will have their own letter created and sent.
+Поддержка ограничения на количество получателей одного письма, т.е. если задано несколько получателей и стоит ограничение на количество получателей - 1, то каждому получателю будет создано и отправлено своё письмо.
 
-Support for sending letters to hidden recipients, the name and address of the recipient are not displayed in the "To" field.
+Поддержка отправки писем скрытым получателям, имя и адрес получателя не отображается в поле
+"Кому" (To).
 
-Allows you to attach files of any format to the letter.
+Позволяет прикрепить к письму файлы любого формата.
 
-Creating a message from any HTML file with loading pictures, style sheets and scripts.
+Создание сообщения из любого HTML файла с подгрузкой картинок, стилевых таблиц и скриптов.
 
-Supports text encoding from Windows-1251 to UTF-8 and back, without requiring the iconv module.
+Поддерживается кодирование текста из кодировки Windows-1251 в кодировку UTF-8 и обратно, не требуя наличия модуля iconv.
 
-Checking email addresses for spelling.
+Проверка электронного адреса на правильность написания.
 
-Logging all actions.
+Протоколирование всех действий.
 
-# Description
-**Basic functions for sending messages**
+# Описание работы
+**Основные функции отправки сообщений**
 
-Including a class file
+Подключение файла класса
 ```php
 require_once("FMail.php");
 ```
-or using composer
+или с использованием composer
 ```php
 require_once("vendor/autoload.php");
 ```
-Initializing a class
+Инициализация класса
 ```php
 $ml = new FYN\FMail();
 ```
 
-Attention!!! The class has default values. Changing all default parameters can be done in the variable block "Script (class) settings variables". Or through special class functions that will be described below.
+Внимание!!! В классе есть значения используемые по умолчанию. Изменение всех параметров по умолчанию можно произвести в блоке переменных "Переменные настройки скрипта (класса)". Или через специальные функции класса которые будут описаны ниже.
 
-By default, the script uses the PHP mail() function. To connect via a socket, specify:
+По умолчанию скрипт использует функцию PHP mail(). Для подключения через сокет указываем:
 ```php
 $ml->setMailUse(false);
 ```
-When connecting via a socket, 'localhost' is used as the server by default. To change it, use the function:
+При подключении через сокет по умолчанию используется в качестве сервера localhost, для
+изменения пользуемся функцией:
 ```php
-$ml->setServer('your_mailserver.com'); //You can specify the IP address or domain name of the server
+$ml->setServer('your_mailserver.com'); //можно указать IP адрес или доменное имя сервера
 ```
-When connecting via a socket, port 25 is used by default. To change this, use the function:
+При подключении через сокет по умолчанию используется 25 порт, для изменения пользуемся функцией:
 ```php
-$ml->setPort(2525); //Specify the port number.
+$ml->setPort(2525); //Указывает номер порта
 ```
-When connecting via a socket, the default is to wait 10 seconds for a socket response. To change this, use the function:
+При подключении через сокет по умолчанию используется 10 секундное ожидание ответа сокета, для
+изменения пользуемся функцией:
 ```php
-$ml->setTimeout(30); //Specify the time in seconds
+$ml->setTimeout(30); //Указываем время в секундах
 ```
-When connecting via a socket, by default, user authorization on the server is not required. To change this, use the function:
+При подключении через сокет по умолчанию не требуется авторизация пользователя на сервере, для
+изменения пользуемся функцией:
 ```php
-$ml->setAuth('PLAIN'); //Specify the authorization method LOGIN or PLAIN
+$ml->setAuth('PLAIN'); //Указываем метод авторизации LOGIN или PLAIN
 ```
-To authorize, you must specify the username and password. We use the functions:
+Для авторизации необходимо указать логин и пароль пользователя. Пользуемся функциями:
 ```php
-$ml->setLogin('login'); //Specify the user login
-$ml->setPassword('password'); //Specify the user password
+$ml->setLogin('login'); //Указываем логин пользователя
+$ml->setPassword('password'); //Указываем пароль пользователя
 ```
-By default, there is a limit on the number of simultaneous recipients of the letter - 1 (one). 
-To change this, use the function:
+По умолчанию стоит ограничение на количество одновременных получателей письма - 1 (один).
+Для изменения пользуемся функцией:
 ```php
-$ml->setMaxRecipient(2); //The number of simultaneous recipients of the letter
+$ml->setMaxRecipient(2); //Количество одновременных получателей письма
 ```
-By default, UTF-8 text encoding is used. To change it, use the function:
+По умолчанию используется кодировка текста UTF-8. Для изменения пользуемся функцией:
 ```php
-$ml->setCharset('WIN'); //Specify the encoding code
+$ml->setCharset('WIN'); //Указываем код кодировки
                         //(WIN=>windows-1251, UTF=>utf-8, ISO=>iso-8859-1, KOI=>koi8-r)
 ```
-Specifying recipients of the letter. (For more details, see the function description)
+Указание получателей письма. (Подробнее - смотри описание функции)
 ```php
 $ml->setTo('test1@mail.com');
-$ml->setTo('test2@mail.com', 'Alex Merphy');
-$ml->setTo('test3@mail.com', $ml->getWin2Utf('Michael Marshal'));
-$ml->setTo(array(array('mail'=>'test4@mail.com', 'username'=>'Alex Merphy')));
+$ml->setTo('test2@mail.com', 'Иван Иванов');
+$ml->setTo('test3@mail.com', $ml->getWin2Utf('Вася Пупкин'));
+$ml->setTo(array(array('mail'=>'test4@mail.com', 'username'=>'Иван Иванов')));
 ```
 Очистить список получателей, так как функция setTo накопительная
 ```php
@@ -113,9 +117,9 @@ $ml->clearTo();
 Указание, если надо, скрытых получателей письма. (Подробнее - смотри описание функции)
 ```php
 $ml->setBcc('bcc1@mail.com');
-$ml->setBcc('bcc2@mail.com', 'Alex Merphy');
-$ml->setBcc('bcc3@mail.com', $ml->getUtf2Win('Michael Marshal'));
-$ml->setBcc(array(array('mail'=>'bcc4@mail.com', 'username'=>'Alex Merphy')));
+$ml->setBcc('bcc2@mail.com', 'Иван Иванов');
+$ml->setBcc('bcc3@mail.com', $ml->getUtf2Win('Вася Пупкин'));
+$ml->setBcc(array(array('mail'=>'bcc4@mail.com', 'username'=>'Иван Иванов')));
 ```
 Очистить скрытых список получателей, так как функция setBcc накопительная
 ```php

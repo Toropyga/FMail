@@ -6,7 +6,7 @@
  * +-----------------------------------------------------------------------+
  * | PHP Mail sender script                                                |
  * | (русская версия)                                                      |
- * | Copyright (c) 2003-2019 Yuri Frantsevich                              |
+ * | Copyright (c) 2003-2026 Yuri Frantsevich                              |
  * +-----------------------------------------------------------------------+
  * |                                                                       |
  * | This library is free software; you can redistribute it and/or         |
@@ -19,7 +19,7 @@
  * | Author: Yuri Frantsevich <fyn@tut.by>                                 |
  * +-----------------------------------------------------------------------+
  *
- * $Id: FMail.php, v 6.0.4 2023/05/19 16:30:18
+ * $Id: FMail.php, v 6.0.5 2026/07/28 14:11
  */
 
 /**
@@ -27,12 +27,12 @@
  *
  * @name    /FYN/FMail
  * @access  public
- * @version 6.0.3 (ru)
+ * @version 6.0.5 (ru)
  * @author  Yuri Frantsevich <frantsevich@gmail.com>
  * @charset UTF-8
  *
  * Date 09/08/2003
- * @copyright 2003-2023
+ * @copyright 2003-2026
  */
 
 namespace FYN;
@@ -42,7 +42,7 @@ use FYN\Base;
 class FMail {
 
 //      +---------------------------------------------+
-//      |    Переменные настройки скрипта (класса)    |
+//      |      Script (class) settings variables      |
 //      +---------------------------------------------+
 
     /**
@@ -1345,7 +1345,7 @@ class FMail {
             $file_content = preg_replace("/\r/", '', $file_content);
             $file_content = preg_replace("/\n/", '', $file_content);
             if ($nl) $file_content = strtr($file_content, array($nl=>"\n"));
-            $file_content = $this->getQuotedPrint($file_content);
+            $file_content = quoted_printable_encode($file_content);
             $this->ctype = $this->ContentType[3];
             $this->encoding = $this->Encoding[3];
             $this->message = $file_content;
@@ -2001,21 +2001,6 @@ class FMail {
             $html = preg_replace("/(\s)\s\s/", "\\1", $html);
         }
         return $html;
-    }
-
-    /**
-     * Конвертация текста в формат Quoted-printable
-     * @param string $line - текст
-     * @return string
-     */
-    private function getQuotedPrint ($line) {
-        if (is_array($line)) $line = implode($line);
-        if (!function_exists("imap_8bit")) {
-            $line = preg_replace( '/[^\x21-\x3C\x3E-\x7E\x09\x20]/e', 'sprintf( "=%02x", ord ( "$0" ) ) ;',  $line );
-            preg_match_all( '/.{1,73}([^=]{0,3})?/', $line, $match );
-            return implode( '=' . chr(13).chr(10), $match[0] );
-        }
-        else return imap_8bit($line);
     }
 
     /**
