@@ -2,7 +2,7 @@
 PHP Mail sender script
 
 ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
-![Version](https://img.shields.io/badge/version-v6.0.5-blue.svg)
+![Version](https://img.shields.io/badge/version-v6.0.6-blue.svg)
 ![PHP](https://img.shields.io/badge/php-v5.5_--_v8-blueviolet.svg)
 
 Description and examples of using PHP class for sending and receiving mail FMail
