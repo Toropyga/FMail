@@ -7,12 +7,12 @@ PHP Mail sender script
 
 Description and examples of using PHP class for sending and receiving mail FMail
 
-# Содержание
+# Contents
 
 - [General concepts](#General-concepts)
 - [Class capabilities](#Class-capabilities)
 - [Description](#Description)
-- [Пример использования](#пример-использования)
+- [Example of use](#пример-использования)
 
 # General concepts
 The FMail class is designed to send and receive email messages using PHP.
@@ -106,163 +106,163 @@ $ml->setTo('test2@mail.com', 'Alex Merphy');
 $ml->setTo('test3@mail.com', $ml->getWin2Utf('Michael Marshal'));
 $ml->setTo(array(array('mail'=>'test4@mail.com', 'username'=>'Alex Merphy')));
 ```
-Очистить список получателей, так как функция setTo накопительная
+Clear the recipient list, since setTo accumulates recipients
 ```php
 $ml->clearTo();
 ```
-Указание, если надо, скрытых получателей письма. (Подробнее - смотри описание функции)
+Specify BCC recipients if needed (see the function description for details).
 ```php
 $ml->setBcc('bcc1@mail.com');
 $ml->setBcc('bcc2@mail.com', 'Alex Merphy');
 $ml->setBcc('bcc3@mail.com', $ml->getUtf2Win('Michael Marshal'));
 $ml->setBcc(array(array('mail'=>'bcc4@mail.com', 'username'=>'Alex Merphy')));
 ```
-Очистить скрытых список получателей, так как функция setBcc накопительная
+Clear the BCC recipient list, since setBcc accumulates recipients
 ```php
 $ml->clearBcc();
 ```
-Указание отправителя письма. (Подробнее - смотри описание функции)
+Specify the sender (see the function description for details).
 ```php
 $ml->setFrom('this@server.com');
 ```
 или
 ```php
-$ml->setFrom('this@server.com', 'Имя Отправителя');
+$ml->setFrom('this@server.com', 'Sender Name');
 ```
-Указание темы сообщения
+Setting the message subject
 ```php
-$ml->setSubject('Тема сообщения');
+$ml->setSubject('Message Subject');
 ```
-Задание текста письма.
+Setting the message body.
 
-Для задания текста письма можно использовать 4 различных функции. При создании письма
-необходимо выбрать одну, так как каждая функция не добавляет к ранее заданному тексту
-письма новый текст, а заменяет старый новым!!!
+You can use four different functions to define the message body. When composing a message,
+choose only one, because each function replaces the previously defined message body
+instead of appending to it.
 1. Создание простого текстового сообщения (text/plain)
 ```php
-$ml->setMessage("Здесь текст письма!");
+$ml->setMessage("Message text goes here!");
 ```
 2. Создание текстового сообщения в формате HTML
 ```php
-$ml->setHTMLMessage("Здесь текст письма");
+$ml->setHTMLMessage("Message text goes here");
 ```
 или
 ```php
-$ml->setHTMLMessage("<html><body>Здесь<br>текст<b>письма!!!</b></body></html>");
+$ml->setHTMLMessage("<html><body>Message<br><b>body!!!</b></body></html>");
 ```
 3. Создание простого текстового сообщения (text/plain) из HTML файла
 ```php
-$ml->setMessageFromHTML("file.html"); //Указываем путь к файлу HTML
+$ml->setMessageFromHTML("file.html"); //Specify the path to the HTML file
 ```
 4. Создание сообщения из HTML файла (возвращает true или false)
 ```php
-$ml->setHTMLfile("file.html"); //Указываем путь к файлу HTML
+$ml->setHTMLfile("file.html"); //Specify the path to the HTML file
 ```
-Добавление файлов к письму (возвращает true или false)
+Attach files to the message (returns true or false)
 ```php
-$ml->setFile("file1.txt"); //Указываем путь к файлу
+$ml->setFile("file1.txt"); //Specify the file path
 $ml->setFile("file2.gif");
 $ml->setFile("file3.zip");
 ```
-Очистить список файлов, так как функция setFile накопительная
+Clear the attachment list, since setFile accumulates files
 ```php
 $ml->clearFiles();
 ```
-Отправка письма (возвращает true или false)
+Send the message (returns true or false)
 ```php
 $ml->send();
 ```
 
-**Основные функции получения сообщений**
+**Basic functions for receiving messages**
 
-Подключение файла класса
+Including the class file
 ```php
 require_once("FMail.php");
 ```
-Инициализация класса
+Initializing the class
 ```php
 $ml = new /FYN/FMail();
 ```
-При подключении по умолчанию используется в качестве сервера localhost, для
-изменения пользуемся функцией:
+By default, localhost is used as the server. To change it,
+use:
 ```php
-$ml->setServer('your_mailserver.com'); //можно указать IP адрес или доменное имя сервера
+$ml->setServer('your_mailserver.com'); //You can specify an IP address or domain name
 ```
-При подключении IMAP по умолчанию используется 143 порт, для изменения пользуемся функцией:
+При подключении IMAP по умолчанию используется 143 порт, для use:
 ```php
-$ml->setImapPort(993); //Указывает номер порта
+$ml->setImapPort(993); //Specify the port number
 ```
-По умолчанию используется подключение по протоколу IMAP,
-можно использовать, но не рекомендуется, протокол POP3.
-Для изменения пользуемся функцией:
+IMAP is used by default.
+POP3 can also be used, but it is not recommended.
+Для use:
 ```php
 $ml->setImapType('pop3');
 ```
-Настройка флагов подключения для функции imap_open
+Configure connection flags for imap_open
 ```php
 $ml->setImapFlags('/ssl/debug/user=Administrator', true);
 ```
-Для авторизации необходимо указать логин и пароль пользователя. Пользуемся функциями:
+Specify the user login and password for authentication:
 ```php
-$ml->setLogin('login'); //Указываем логин пользователя
-$ml->setPassword('password'); //Указываем пароль пользователя
+$ml->setLogin('login'); //Specify the user login
+$ml->setPassword('password'); //Specify the user password
 ```
-Считываем список папок.
+Read the list of folders.
 ```php
 $folders = $ml->getImapFolders();
 ```
-Задание папки для чтения её содержимого
+Select the folder to read
 ```php
 $ml->setImapFolder('INBOX/Работа');
 ```
-Возвращаем список писем в папке
-Все параметры необязательные. Указаваем имя папки, номер сообщения с которого начинаем чтение папки
-и количество сообщений для возврата (см. описание функции)
+Return the list of messages in the folder
+All parameters are optional. Specify the folder name, the first message number
+and the number of messages to return.
 ```php
 $ml->read_folder('INBOX', 124, 10);
 ```
 Возврат списка писем в почтовом ящике по заданным параметрам
 ```php
-$mails = $ml->receive('UNSEEN'); // список параметров см. в описании функции
+$mails = $ml->receive('UNSEEN'); // See the function description for available parameters
 ```
-Чтение письма по номеру письма
+Read a message by its sequence number
 ```php
 $ml->read_mail(124);
 ```
-Чтение письма по UID
+Read a message by UID
 ```php
 $ml->read_mail_UID(24);
 ```
 
-**Дополнительные функции**
+**Additional functions**
 
-Проверка правильности написания адреса электронной почты (возвращает true или false)
+Validate an email address (returns true or false)
 ```php
 $ml->getCheck('test@mail.com');
 ```
-Конвертация текста из кодировки Windows-1251 в кодировку UTF-8
+Convert text from Windows-1251 to UTF-8
 ```php
-$text = $ml->getWin2Utf($text); //передаём текст который надо конвертировать
+$text = $ml->getWin2Utf($text); //Pass the text to convert
 ```
-Конвертация текста из кодировки UTF-8 в кодировку Windows-1251
+Convert text from UTF-8 to Windows-1251
 ```php
-$text = $ml->getUtf2Win($text); //передаём текст который надо конвертировать
+$text = $ml->getUtf2Win($text); //Pass the text to convert
 ```
-Включение отладочных функций скрипта (при ошибке выводит сообщение на экран)
+Enable debug mode (prints errors to the screen)
 ```php
 $ml->setDebug(true);
 ```
-Просмотр логов класса. Передаём параметры необходимых логов.
-0 - все логи, 1 - отработавшие функции, 2 - переданные и полученные данные, 3 - ошибки
+View class logs. Pass the required log type.
+0 - all logs, 1 - executed functions, 2 - transmitted/received data, 3 - errors
 ```php
-$logs = $ml->getLogs(3); //При включенных отладочных функциях выводит логи на экран
+$logs = $ml->getLogs(3); //With debug mode enabled, logs are printed to the screen
 ```
-Декодирование строк вида =?utf-8?B?0KHQv9GA0LDQstC+0YfQvdC40Log0JHQmNCa?=
+Decode strings such as =?utf-8?B?0KHQv9GA0LDQstC+0YfQvdC40Log0JHQmNCa?=
 ```php
 $text = $ml->getSubjectDecode($text);
 ```
 
-# Пример использования
+# Example of use
 
 ```php
 require_once("FMail.php");
@@ -275,11 +275,11 @@ $ml->setPassword('password');
 $ml->setMaxRecipient(2);
 $ml->setCharset('UTF');
 $ml->setTo('test1@mail.com');
-$ml->setTo('test2@mail.com', 'Иван Иванов');
+$ml->setTo('test2@mail.com', 'John Doe');
 $ml->setBcc('bcc1@mail.com');
-$ml->setFrom('this@server.com', $ml->getWin2Utf('Имя Отправителя'));
-$ml->setSubject('Тема сообщения');
-$ml->setHTMLMessage("Здесь текст письма");
+$ml->setFrom('this@server.com', $ml->getWin2Utf('Sender Name'));
+$ml->setSubject('Message Subject');
+$ml->setHTMLMessage("Message text goes here");
 $ml->setFile("file1.txt");
 $ml->setFile("file2.gif");
 $ml->setFile("file3.zip");
