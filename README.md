@@ -5,264 +5,262 @@ PHP Mail sender script
 ![Version](https://img.shields.io/badge/version-v6.0.6-blue.svg)
 ![PHP](https://img.shields.io/badge/php-v5.5_--_v8-blueviolet.svg)
 
-Description and examples of using PHP class for sending and receiving mail FMail
+Description and usage examples for the FMail PHP class for sending and receiving mail.
 
-# Contents
+# Table of Contents
 
-- [General concepts](#General-concepts)
-- [Class capabilities](#Class-capabilities)
-- [Description](#Description)
-- [Example of use](#пример-использования)
+- [Overview](#overview)
+- [Features of the FMail class](#features-of-the-fmail-class)
+- [How it works](#how-it-works)
+- [Usage example](#usage-example)
 
-# General concepts
-The FMail class is designed to send and receive email messages using PHP.
-This class is not a full-fledged email program for working with email!
-PHP version 4 or higher is required for operation.
+# Overview
+The FMail class is designed for sending and receiving email messages using PHP.
+This class is not a full-featured email client!
+It requires PHP version 4 or higher.
 
-# Class capabilities
-Allows sending emails using the standard PHP mail() function, and also without using this function directly connecting to the specified mail server via a socket.
+# Features of the FMail class
+Allows sending mail using the standard PHP `mail()` function, or, without using that function directly, connecting to a specified mail server via a socket.
 
-Allows receiving emails using the PHP IMAP library
+Allows receiving mail using the PHP IMAP library.
 
 Supports authorization on mail servers using the PLAIN and LOGIN methods.
 
-Supported text encodings (charset) ISO-8859-1, UTF-8, WINDOWS-1251 and KOI8-R.
+Supports the ISO-8859-1, UTF-8, WINDOWS-1251, and KOI8-R text encodings (charsets).
 
-Supports sending messages in text and HTML format.
+Supports sending messages in both plain text and HTML format.
 
-Sending a letter to multiple recipients.
+Sending a message to multiple recipients.
 
-Support for limiting the number of recipients of one letter, i.e. if several recipients are specified and the limit for the number of recipients is 1, then each recipient will have their own letter created and sent.
+Supports limiting the number of recipients per message — i.e., if several recipients are specified and the recipient limit is set to 1, a separate message will be created and sent to each recipient individually.
 
-Support for sending letters to hidden recipients, the name and address of the recipient are not displayed in the "To" field.
+Supports sending messages to hidden recipients, whose name and address are not shown in the "To" field.
 
-Allows you to attach files of any format to the letter.
+Allows attaching files of any format to a message.
 
-Creating a message from any HTML file with loading pictures, style sheets and scripts.
+Creating a message from any HTML file, including loading images, stylesheets, and scripts.
 
-Supports text encoding from Windows-1251 to UTF-8 and back, without requiring the iconv module.
+Supports converting text from Windows-1251 encoding to UTF-8 and back, without requiring the iconv module.
 
-Checking email addresses for spelling.
+Email address format validation.
 
-Logging all actions.
+Logging of all actions.
 
-# Description
-**Basic functions for sending messages**
+# How it works
+**Core message-sending functions**
 
-Including a class file
+Include the class file
 ```php
 require_once("FMail.php");
 ```
-or using composer
+or using Composer
 ```php
 require_once("vendor/autoload.php");
 ```
-Initializing a class
+Initialize the class
 ```php
 $ml = new FYN\FMail();
 ```
 
-Attention!!! The class has default values. Changing all default parameters can be done in the variable block "Script (class) settings variables". Or through special class functions that will be described below.
+Warning!!! The class has default values. All default parameters can be changed in the "Script (class) settings variables" block, or via the special class functions described below.
 
-By default, the script uses the PHP mail() function. To connect via a socket, specify:
+By default, the script uses the PHP `mail()` function. To connect via a socket instead, specify:
 ```php
 $ml->setMailUse(false);
 ```
-When connecting via a socket, 'localhost' is used as the server by default. To change it, use the function:
+When connecting via a socket, the default server is `localhost`. To change it, use:
 ```php
-$ml->setServer('your_mailserver.com'); //You can specify the IP address or domain name of the server
+$ml->setServer('your_mailserver.com'); // you can specify an IP address or a domain name
 ```
-When connecting via a socket, port 25 is used by default. To change this, use the function:
+When connecting via a socket, the default port is 25. To change it, use:
 ```php
-$ml->setPort(2525); //Specify the port number.
+$ml->setPort(2525); // specifies the port number
 ```
-When connecting via a socket, the default is to wait 10 seconds for a socket response. To change this, use the function:
+When connecting via a socket, the default socket response timeout is 10 seconds. To change it, use:
 ```php
-$ml->setTimeout(30); //Specify the time in seconds
+$ml->setTimeout(30); // specify the time in seconds
 ```
-When connecting via a socket, by default, user authorization on the server is not required. To change this, use the function:
+When connecting via a socket, user authorization on the server is not required by default. To change this, use:
 ```php
-$ml->setAuth('PLAIN'); //Specify the authorization method LOGIN or PLAIN
+$ml->setAuth('PLAIN'); // specify the authorization method: LOGIN or PLAIN
 ```
-To authorize, you must specify the username and password. We use the functions:
+For authorization, you must specify the user's login and password. Use the functions:
 ```php
-$ml->setLogin('login'); //Specify the user login
-$ml->setPassword('password'); //Specify the user password
+$ml->setLogin('login'); // specify the user's login
+$ml->setPassword('password'); // specify the user's password
 ```
-By default, there is a limit on the number of simultaneous recipients of the letter - 1 (one). 
-To change this, use the function:
+By default, the limit on the number of simultaneous message recipients is 1 (one).
+To change it, use:
 ```php
-$ml->setMaxRecipient(2); //The number of simultaneous recipients of the letter
+$ml->setMaxRecipient(2); // number of simultaneous message recipients
 ```
-By default, UTF-8 text encoding is used. To change it, use the function:
+By default, UTF-8 text encoding is used. To change it, use:
 ```php
-$ml->setCharset('WIN'); //Specify the encoding code
-                        //(WIN=>windows-1251, UTF=>utf-8, ISO=>iso-8859-1, KOI=>koi8-r)
+$ml->setCharset('WIN'); // specify the encoding code
+                        // (WIN=>windows-1251, UTF=>utf-8, ISO=>iso-8859-1, KOI=>koi8-r)
 ```
-Specifying recipients of the letter. (For more details, see the function description)
+Specifying message recipients. (For more details, see the function description)
 ```php
 $ml->setTo('test1@mail.com');
-$ml->setTo('test2@mail.com', 'Alex Merphy');
-$ml->setTo('test3@mail.com', $ml->getWin2Utf('Michael Marshal'));
-$ml->setTo(array(array('mail'=>'test4@mail.com', 'username'=>'Alex Merphy')));
+$ml->setTo('test2@mail.com', 'Ivan Ivanov');
+$ml->setTo('test3@mail.com', $ml->getWin2Utf('Vasya Pupkin'));
+$ml->setTo(array(array('mail'=>'test4@mail.com', 'username'=>'Ivan Ivanov')));
 ```
-Clear the recipient list, since setTo accumulates recipients
+Clear the list of recipients, since the `setTo` function is cumulative
 ```php
 $ml->clearTo();
 ```
-Specify BCC recipients if needed (see the function description for details).
+Specifying hidden recipients (BCC) of the message, if needed. (For more details, see the function description)
 ```php
 $ml->setBcc('bcc1@mail.com');
-$ml->setBcc('bcc2@mail.com', 'Alex Merphy');
-$ml->setBcc('bcc3@mail.com', $ml->getUtf2Win('Michael Marshal'));
-$ml->setBcc(array(array('mail'=>'bcc4@mail.com', 'username'=>'Alex Merphy')));
+$ml->setBcc('bcc2@mail.com', 'Ivan Ivanov');
+$ml->setBcc('bcc3@mail.com', $ml->getUtf2Win('Vasya Pupkin'));
+$ml->setBcc(array(array('mail'=>'bcc4@mail.com', 'username'=>'Ivan Ivanov')));
 ```
-Clear the BCC recipient list, since setBcc accumulates recipients
+Clear the list of hidden recipients, since the `setBcc` function is cumulative
 ```php
 $ml->clearBcc();
 ```
-Specify the sender (see the function description for details).
+Specifying the message sender. (For more details, see the function description)
 ```php
 $ml->setFrom('this@server.com');
 ```
-или
+or
 ```php
 $ml->setFrom('this@server.com', 'Sender Name');
 ```
-Setting the message subject
+Specifying the message subject
 ```php
-$ml->setSubject('Message Subject');
+$ml->setSubject('Message subject');
 ```
 Setting the message body.
 
-You can use four different functions to define the message body. When composing a message,
-choose only one, because each function replaces the previously defined message body
-instead of appending to it.
-1. Создание простого текстового сообщения (text/plain)
+There are 4 different functions available for setting the message body. When creating a message,
+choose only one, since each function does not append new text to the previously set message
+body — it replaces the old text with the new one!!!
+1. Creating a plain text message (text/plain)
 ```php
-$ml->setMessage("Message text goes here!");
+$ml->setMessage("Message text here!");
 ```
-2. Создание текстового сообщения в формате HTML
+2. Creating a text message in HTML format
 ```php
-$ml->setHTMLMessage("Message text goes here");
+$ml->setHTMLMessage("Message text here");
 ```
-или
+or
 ```php
-$ml->setHTMLMessage("<html><body>Message<br><b>body!!!</b></body></html>");
+$ml->setHTMLMessage("<html><body>Here<br>is the<b>message text!!!</b></body></html>");
 ```
-3. Создание простого текстового сообщения (text/plain) из HTML файла
+3. Creating a plain text message (text/plain) from an HTML file
 ```php
-$ml->setMessageFromHTML("file.html"); //Specify the path to the HTML file
+$ml->setMessageFromHTML("file.html"); // specify the path to the HTML file
 ```
-4. Создание сообщения из HTML файла (возвращает true или false)
+4. Creating a message from an HTML file (returns true or false)
 ```php
-$ml->setHTMLfile("file.html"); //Specify the path to the HTML file
+$ml->setHTMLfile("file.html"); // specify the path to the HTML file
 ```
-Attach files to the message (returns true or false)
+Adding files to the message (returns true or false)
 ```php
-$ml->setFile("file1.txt"); //Specify the file path
+$ml->setFile("file1.txt"); // specify the path to the file
 $ml->setFile("file2.gif");
 $ml->setFile("file3.zip");
 ```
-Clear the attachment list, since setFile accumulates files
+Clear the list of files, since the `setFile` function is cumulative
 ```php
 $ml->clearFiles();
 ```
-Send the message (returns true or false)
+Sending the message (returns true or false)
 ```php
 $ml->send();
 ```
 
-**Basic functions for receiving messages**
+**Core message-receiving functions**
 
-Including the class file
+Include the class file
 ```php
 require_once("FMail.php");
 ```
-Initializing the class
+Initialize the class
 ```php
 $ml = new /FYN/FMail();
 ```
-By default, localhost is used as the server. To change it,
-use:
+By default, the connection uses `localhost` as the server. To change it, use:
 ```php
-$ml->setServer('your_mailserver.com'); //You can specify an IP address or domain name
+$ml->setServer('your_mailserver.com'); // you can specify an IP address or a domain name
 ```
-При подключении IMAP по умолчанию используется 143 порт, для use:
+When connecting via IMAP, the default port is 143. To change it, use:
 ```php
-$ml->setImapPort(993); //Specify the port number
+$ml->setImapPort(993); // specifies the port number
 ```
-IMAP is used by default.
-POP3 can also be used, but it is not recommended.
-Для use:
+The IMAP protocol is used by default for connections. POP3 can be used, but it is
+not recommended. To change this, use:
 ```php
 $ml->setImapType('pop3');
 ```
-Configure connection flags for imap_open
+Setting connection flags for the `imap_open` function
 ```php
 $ml->setImapFlags('/ssl/debug/user=Administrator', true);
 ```
-Specify the user login and password for authentication:
+For authorization, you must specify the user's login and password. Use the functions:
 ```php
-$ml->setLogin('login'); //Specify the user login
-$ml->setPassword('password'); //Specify the user password
+$ml->setLogin('login'); // specify the user's login
+$ml->setPassword('password'); // specify the user's password
 ```
 Read the list of folders.
 ```php
 $folders = $ml->getImapFolders();
 ```
-Select the folder to read
+Setting the folder to read its contents
 ```php
-$ml->setImapFolder('INBOX/Работа');
+$ml->setImapFolder('INBOX/Work');
 ```
-Return the list of messages in the folder
-All parameters are optional. Specify the folder name, the first message number
-and the number of messages to return.
+Returns the list of messages in a folder.
+All parameters are optional. Specify the folder name, the message number to start reading from,
+and the number of messages to return (see the function description)
 ```php
 $ml->read_folder('INBOX', 124, 10);
 ```
-Возврат списка писем в почтовом ящике по заданным параметрам
+Returns the list of messages in the mailbox based on the specified parameters
 ```php
-$mails = $ml->receive('UNSEEN'); // See the function description for available parameters
+$mails = $ml->receive('UNSEEN'); // see the function description for the list of parameters
 ```
-Read a message by its sequence number
+Reading a message by message number
 ```php
 $ml->read_mail(124);
 ```
-Read a message by UID
+Reading a message by UID
 ```php
 $ml->read_mail_UID(24);
 ```
 
 **Additional functions**
 
-Validate an email address (returns true or false)
+Validating the format of an email address (returns true or false)
 ```php
 $ml->getCheck('test@mail.com');
 ```
-Convert text from Windows-1251 to UTF-8
+Converting text from Windows-1251 encoding to UTF-8
 ```php
-$text = $ml->getWin2Utf($text); //Pass the text to convert
+$text = $ml->getWin2Utf($text); // pass the text to be converted
 ```
-Convert text from UTF-8 to Windows-1251
+Converting text from UTF-8 encoding to Windows-1251
 ```php
-$text = $ml->getUtf2Win($text); //Pass the text to convert
+$text = $ml->getUtf2Win($text); // pass the text to be converted
 ```
-Enable debug mode (prints errors to the screen)
+Enabling the script's debug functions (displays an error message on screen if one occurs)
 ```php
 $ml->setDebug(true);
 ```
-View class logs. Pass the required log type.
-0 - all logs, 1 - executed functions, 2 - transmitted/received data, 3 - errors
+Viewing the class logs. Pass the parameters for the logs you need.
+0 - all logs, 1 - executed functions, 2 - data sent and received, 3 - errors
 ```php
-$logs = $ml->getLogs(3); //With debug mode enabled, logs are printed to the screen
+$logs = $ml->getLogs(3); // when debug functions are enabled, displays the logs on screen
 ```
-Decode strings such as =?utf-8?B?0KHQv9GA0LDQstC+0YfQvdC40Log0JHQmNCa?=
+Decoding strings of the form =?utf-8?B?0KHQv9GA0LDQstC+0YfQvdC40Log0JHQmNCa?=
 ```php
 $text = $ml->getSubjectDecode($text);
 ```
 
-# Example of use
+# Usage example
 
 ```php
 require_once("FMail.php");
@@ -275,11 +273,11 @@ $ml->setPassword('password');
 $ml->setMaxRecipient(2);
 $ml->setCharset('UTF');
 $ml->setTo('test1@mail.com');
-$ml->setTo('test2@mail.com', 'John Doe');
+$ml->setTo('test2@mail.com', 'Ivan Ivanov');
 $ml->setBcc('bcc1@mail.com');
 $ml->setFrom('this@server.com', $ml->getWin2Utf('Sender Name'));
-$ml->setSubject('Message Subject');
-$ml->setHTMLMessage("Message text goes here");
+$ml->setSubject('Message subject');
+$ml->setHTMLMessage("Message text here");
 $ml->setFile("file1.txt");
 $ml->setFile("file2.gif");
 $ml->setFile("file3.zip");
