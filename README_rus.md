@@ -2,7 +2,7 @@
 PHP Mail sender script
 
 ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
-![Version](https://img.shields.io/badge/version-v6.0.6-blue.svg)
+![Version](https://img.shields.io/badge/version-v7.0.0-blue.svg)
 ![PHP](https://img.shields.io/badge/php-v5.5_--_v8-blueviolet.svg)
 
 Описание и примеры использования PHP класса отправки и получения почты FMail
@@ -60,7 +60,7 @@ require_once("vendor/autoload.php");
 ```
 Инициализация класса
 ```php
-$ml = new FYN\FMail();
+$ml = new Toropyga\FMail();
 ```
 
 Внимание!!! В классе есть значения используемые по умолчанию. Изменение всех параметров по умолчанию можно произвести в блоке переменных "Переменные настройки скрипта (класса)". Или через специальные функции класса которые будут описаны ниже.
@@ -185,7 +185,7 @@ require_once("FMail.php");
 ```
 Инициализация класса
 ```php
-$ml = new /FYN/FMail();
+$ml = new Toropyga/FMail();
 ```
 При подключении по умолчанию используется в качестве сервера localhost, для
 изменения пользуемся функцией:
@@ -270,7 +270,7 @@ $text = $ml->getSubjectDecode($text);
 
 ```php
 require_once("FMail.php");
-$ml = new FYN\FMail();
+$ml = new Toropyga\FMail();
 $ml->setMailUse(false);
 $ml->setServer('your_mail_server.com');
 $ml->setAuth('LOGIN');

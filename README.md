@@ -2,7 +2,7 @@
 PHP Mail sender script
 
 ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
-![Version](https://img.shields.io/badge/version-v6.0.6-blue.svg)
+![Version](https://img.shields.io/badge/version-v7.0.0-blue.svg)
 ![PHP](https://img.shields.io/badge/php-v5.5_--_v8-blueviolet.svg)
 
 Description and usage examples for the FMail PHP class for sending and receiving mail.
@@ -59,7 +59,7 @@ require_once("vendor/autoload.php");
 ```
 Initialize the class
 ```php
-$ml = new FYN\FMail();
+$ml = new Toropyga\FMail();
 ```
 
 Warning!!! The class has default values. All default parameters can be changed in the "Script (class) settings variables" block, or via the special class functions described below.
@@ -181,7 +181,7 @@ require_once("FMail.php");
 ```
 Initialize the class
 ```php
-$ml = new /FYN/FMail();
+$ml = new Toropyga/FMail();
 ```
 By default, the connection uses `localhost` as the server. To change it, use:
 ```php
@@ -264,7 +264,7 @@ $text = $ml->getSubjectDecode($text);
 
 ```php
 require_once("FMail.php");
-$ml = new FYN\FMail();
+$ml = new Toropyga\FMail();
 $ml->setMailUse(false);
 $ml->setServer('your_mail_server.com');
 $ml->setAuth('LOGIN');

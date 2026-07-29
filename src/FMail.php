@@ -19,15 +19,15 @@
  * | Author: Yuri Frantsevich <fyn@tut.by>                                 |
  * +-----------------------------------------------------------------------+
  *
- * $Id: FMail.php, v 6.0.6 2026/07/28 14:16
+ * $Id: FMail.php, v 7.0.0 2026/07/29 14:16
  */
 
 /**
  * PHP Mail sender script
  *
- * @name    /FYN/FMail
+ * @name    Toropyga/FMail
  * @access  public
- * @version 6.0.6 (ru)
+ * @version 7.0.0 (ru)
  * @author  Yuri Frantsevich <frantsevich@gmail.com>
  * @charset UTF-8
  *
@@ -35,9 +35,9 @@
  * @copyright 2003-2026
  */
 
-namespace FYN;
+namespace Toropyga;
 
-use FYN\Base;
+use Toropyga\Base;
 
 class FMail {
 
