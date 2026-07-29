@@ -19,7 +19,7 @@
  * | Author: Yuri Frantsevich <fyn@tut.by>                                 |
  * +-----------------------------------------------------------------------+
  *
- * $Id: FMail.php, v 7.0.0 2026/07/29 14:16
+ * $Id: FMail.php, v 7.0.1 2026/07/29 14:16
  */
 
 /**
@@ -27,7 +27,7 @@
  *
  * @name    Toropyga/FMail
  * @access  public
- * @version 7.0.0 (ru)
+ * @version 7.0.1 (ru)
  * @author  Yuri Frantsevich <frantsevich@gmail.com>
  * @charset UTF-8
  *
