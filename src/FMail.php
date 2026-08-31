@@ -5,7 +5,6 @@
  * | PHP Version 5 - 8                                                     |
  * +-----------------------------------------------------------------------+
  * | PHP Mail sender script                                                |
- * | (русская версия)                                                      |
  * | Copyright (c) 2003-2026 Yuri Frantsevich                              |
  * +-----------------------------------------------------------------------+
  * |                                                                       |
@@ -16,10 +15,10 @@
  * | See http://www.gnu.org/copyleft/lesser.html                           |
  * |                                                                       |
  * +-----------------------------------------------------------------------+
- * | Author: Yuri Frantsevich <fyn@tut.by>                                 |
+ * | Author: Yuri Frantsevich <frantsevich@gmail.com>                      |
  * +-----------------------------------------------------------------------+
  *
- * $Id: FMail.php, v 7.0.1 2026/07/29 14:16
+ * $Id: FMail.php, v 7.0.2 2026/07/29 14:16
  */
 
 /**
@@ -27,7 +26,7 @@
  *
  * @name    Toropyga/FMail
  * @access  public
- * @version 7.0.1 (ru)
+ * @version 7.0.2
  * @author  Yuri Frantsevich <frantsevich@gmail.com>
  * @charset UTF-8
  *
@@ -46,126 +45,133 @@ class FMail {
 //      +---------------------------------------------+
 
     /**
-     * Использовать или нет функцию mail
-     * Если не используется, то подключаемся через сокет
+     * Whether to use the mail() function
+     * If not used, connects via socket instead
      * @var bool
      */
     private $usemail = true;
 
     /**
-     * Включить отладочные функции скрипта
+     * Enable debug functions of the script
      * @var bool
      */
     private $debug = false;
 
     /**
-     * Адрес сервера при подключении через сокет
+     * Server address for socket connections
      * @var string
      */
     private $server = 'localhost';
 
     /**
-     * Порт SMTP сервера при работе через сокет (отправка сообщений)
+     * SMTP server port for socket mode (sending messages)
      * @var int
      */
     private $port = 25;
 
     /**
-     * Порт IMAP или POP3 сервера при работе через сокет (получение сообщений)
+     * IMAP or POP3 server port for socket mode (receiving messages)
      * @var int
      */
     private $imap_port = 143;
 
     /**
-     * Тип используемого подключения для чтения почты (pop3, imap)
+     * Type of connection used to read mail (pop3, imap)
      * @var string
      */
     private $imap_type = 'imap';
 
     /**
-     * Использовать или нет SSL для шифрования сессии
+     * Whether to use SSL to encrypt the session
      * @var bool
      */
     private $imap_ssl = false;
 
     /**
-     * Дополнительные флаги подключения (см. документацию к функции imap_open)
+     * Additional connection flags (see imap_open() documentation)
      * @var string
      */
     private $imap_flags = '';
 
     /**
-     * Папка из которой читаем поступившую почту
+     * Folder from which incoming mail is read
      * @var string
      */
     private $imap_folder = 'INBOX';
 
     /**
-     * Время ожидания подключения к сокету (сек.)
+     * Socket connection timeout (sec.)
      * @var int
      */
     private $timeout = 10;
 
     /**
-     * Домен отправителя
+     * Whether to use STARTTLS when connecting via socket, if the server supports it
+     * (has no effect if $server is already given as ssl://... or tls://...)
+     * @var bool
+     */
+    private $starttls = true;
+
+    /**
+     * Sender domain
      * @var string
      */
     private $mydomain = '';
 
     /**
-     * Логин пользователя при авторизации
+     * User login for authentication
      * @var string
      */
     private $login = '';
 
     /**
-     * Пароль пользователя при авторизации
+     * User password for authentication
      * @var string
      */
     private $password = '';
 
     /**
-     * Адрес отправителя по умолчанию
+     * Default sender address
      * @var string
      */
     private $FROM = '';
 
     /**
-     * Адрес получателя по умолчанию
+     * Default recipient address
      * @var string
      */
     private $TO = '';
 
     /**
-     * Текст письма по умолчанию
+     * Default message text
      * @var string
      */
     private $MESSAGE = '';
 
     /**
-     * Тема письма по умолчанию
+     * Default message subject
      * @var string
      */
     private $SUBJECT = '';
 
     /**
-     * Максимальное количество получателей в одном письме
+     * Maximum number of recipients per message
      * @var int
      */
     private $maxrecipients = 1;
 
     /**
-     * Имя файла в который сохраняется лог
+     * Name of the file the log is saved to
      * @var string
      */
     private $log_file = 'email.log';
 
 //      +------------------------------------------+
-//      |            Переменные письма             |
+//      |               Message variables          |
 //      +------------------------------------------+
 
     /**
-     * Кодирование письма
+     * Message encoding
      * @var array
      */
     private $Encoding       = array (
@@ -176,7 +182,7 @@ class FMail {
     );
 
     /**
-     * Формат письма
+     * Message format
      * @var array
      */
     private $ContentType    = array(
@@ -189,7 +195,7 @@ class FMail {
     );
 
     /**
-     * Кодировка письма
+     * Message charset
      * @var array
      */
     private $Charset        = array(
@@ -200,109 +206,109 @@ class FMail {
     );
 
     /**
-     * Версия скрипта
+     * Script version
      * @var string
      */
-    private $MimeVersion    = '4.0.2';
+    private $MimeVersion    = '1.0';
 
     /**
-     * Приоретет отправки
+     * Sending priority
      * @var string
      */
     private $XPriority      = '3 (Normal)';
 
     /**
-     * Имя скрипта
+     * Script name
      * @var string
      */
-    private $XMailer        = 'FMail v4.0.2 (ru)';
+    private $XMailer        = 'FMail v7.0.2';
 
     /**
-     * Типы авторизации на серверах SMTP
+     * Authentication types supported on SMTP servers
      * @var array
      */
     private $Authentications = array('LOGIN', 'PLAIN');
 
 //      +-----------------------------------------+
-//      |           Служебные переменные          |
+//      |             Internal variables          |
 //      +-----------------------------------------+
 
     /**
-     * Кодировка UTF8
+     * UTF8 charset table
      * @var array
      */
     private $chars = array();
 
     /**
-     * Данные сокета при подключении на прямую без функции mail.
-     * @var resource
+     * Socket resource for direct connection without the mail() function.
+     * @var resource|false|null
      */
-    private $socket = '';
+    private $socket = null;
 
     /**
-     * Данные подключения на чтение писем (IMAP).
-     * @var resource
+     * Connection resource for reading mail (IMAP).
+     * @var resource|\IMAP\Connection|null
      */
-    private $imap = '';
+    private $imap = null;
 
     /**
-     * Адрес получателя
+     * Recipient address
      * @var array
      */
     private $to = array();
 
     /**
-     * Адреса получателей текущего письма
+     * Recipients of the current message
      * @var array
      */
     private $to_now = array();
 
     /**
-     * Адреса получателей без имени пользователя
+     * Recipient addresses without a display name
      * @var array
      */
     private $to_sock = array();
 
     /**
-     * Адрес отправителя
+     * Sender address
      * @var string
      */
     private $from = '';
 
     /**
-     * Адрес скрытого получателя
+     * Hidden recipient (Bcc) address
      * @var array
      */
     private $bcc = array();
 
     /**
-     * Адреса скрытых получателей без имени
+     * Hidden recipient (Bcc) addresses without a display name
      * @var array
      */
     private $bcc_sock = array();
 
     /**
-     * Текст письма
+     * Message text
      * @var string
      */
     private $message = '';
 
     /**
-     * Тема письма
+     * Message subject
      * @var string
      */
     private $subject = '';
 
     /**
-     * Метод авторизации на сервере при подключении через сокет
-     * Поддерживаются методы перечисленные в массиве $Authentications
-     * Если любой отличный от указанных, то подключается без авторизации
+     * Authentication method used on the server when connecting via socket
+     * Supported methods are listed in the $Authentications array
+     * If any other value is set, connects without authentication
      * @var string
      */
     private $auth = '';
 
     /**
-     * Кодировка письма
+     * Message encoding
      * @var string
      */
     private $encoding = 'base64';
@@ -313,39 +319,37 @@ class FMail {
     private $imap_base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+,';
 
     /**
-     * Кодировка текста
+     * Text charset
      * @var string
      */
     private $charset = 'utf-8';
 
     /**
-     * Формат письма
+     * Message format
      * @var string
      */
     private $ctype = 'text/plain';
 
     /**
-     * Массив прикрепляемых файлов
+     * Array of attached files
      * @var array
      */
     private $files = array();
 
     /**
-     * Перевод строки
+     * Line break
      * @var string
      */
-    //var $rn = "\015\012"; // v 2.4.0
-    //var $rn = "\r\n"; // v 0.0.1
-    private $rn = PHP_EOL; // v 4.0.0
+    private $rn = "\r\n"; // v 7.0.2
 
     /**
-     * Лог событий
+     * Event log
      * @var array
      */
     private $log = array();
 
     /**
-     * Инициализация класса
+     * Class initialization
      * @return boolean
      */
     public function __construct() {
@@ -354,22 +358,22 @@ class FMail {
         $this->charset = $this->Charset[1];
         $this->ctype = $this->ContentType[0];
 
-        if (defined("MAIL_USE_MAIL")) $this->setMailUse(MAIL_USE_MAIL);
-        if (defined("MAIL_SERVER"))$this->setServer(MAIL_SERVER);
-        if (defined("MAIL_PORT")) $this->setPort(MAIL_PORT);
-        if (defined("MAIL_AUTH")) $this->setAuth(MAIL_AUTH);
-        if (defined("MAIL_LOGIN")) $this->setLogin(MAIL_LOGIN);
-        if (defined("MAIL_PASSWD")) $this->setPassword(MAIL_PASSWD);
-        if (defined("MAIL_DOMAIN")) $this->setDomain(MAIL_DOMAIN);
-        if (defined("MAIL_FROM")) $this->setFrom(MAIL_FROM);
-        if (defined("MAIL_ADMIN_EMAIL")) $this->setTo(MAIL_ADMIN_EMAIL);
-        elseif (defined("MAIL_TO")) $this->setTo(MAIL_TO);
-        if (defined("MAIL_MESSAGE")) $this->setMessage(MAIL_MESSAGE);
-        if (defined("MAIL_SUBJ")) $this->setSubject(MAIL_SUBJ);
-        if (defined("MAIL_TIMEOUT")) $this->setTimeout(MAIL_TIMEOUT);
-        if (defined("MAIL_MAXREP")) $this->setMaxRecipient(MAIL_MAXREP);
-        if (defined("MAIL_DEBUG")) $this->setDebug(MAIL_DEBUG);
-        if (defined("MAIL_LOG_NAME")) $this->log_file = MAIL_LOG_NAME;
+        if (defined('MAIL_USE_MAIL')) $this->setMailUse(MAIL_USE_MAIL);
+        if (defined('MAIL_SERVER')) $this->setServer(MAIL_SERVER);
+        if (defined('MAIL_PORT')) $this->setPort(MAIL_PORT);
+        if (defined('MAIL_AUTH')) $this->setAuth(MAIL_AUTH);
+        if (defined('MAIL_LOGIN')) $this->setLogin(MAIL_LOGIN);
+        if (defined('MAIL_PASSWD')) $this->setPassword(MAIL_PASSWD);
+        if (defined('MAIL_DOMAIN')) $this->setDomain(MAIL_DOMAIN);
+        if (defined('MAIL_FROM')) $this->setFrom(MAIL_FROM);
+        if (defined('MAIL_ADMIN_EMAIL')) $this->setTo(MAIL_ADMIN_EMAIL);
+        elseif (defined('MAIL_TO')) $this->setTo(MAIL_TO);
+        if (defined('MAIL_MESSAGE')) $this->setMessage(MAIL_MESSAGE);
+        if (defined('MAIL_SUBJ')) $this->setSubject(MAIL_SUBJ);
+        if (defined('MAIL_TIMEOUT')) $this->setTimeout(MAIL_TIMEOUT);
+        if (defined('MAIL_MAXREP')) $this->setMaxRecipient(MAIL_MAXREP);
+        if (defined('MAIL_DEBUG')) $this->setDebug(MAIL_DEBUG);
+        if (defined('MAIL_LOG_NAME')) $this->log_file = MAIL_LOG_NAME;
 
         $this->log['data'] = array();
         $this->log['error'] = array();
@@ -381,15 +385,15 @@ class FMail {
     }
 
     /**
-     * Запись в лог
-     * Деструктор класса.
+     * Write to log
+     * Class destructor.
      */
     public function __destruct() {
 
     }
 
     /**
-     * Отправка письма
+     * Send message
      * @return bool
      */
     public function send () {
@@ -425,7 +429,7 @@ class FMail {
             else $from = $this->from;
             if (!$this->subject) $this->subject = $this->SUBJECT;
             if (!$this->message) $this->message = $this->MESSAGE;
-            //подготовка письма
+            //prepare the message
             $un = strtoupper(uniqid(time()));
             $head = "From: " . $from . "$this->rn";
             $addbcc = 0;
@@ -439,38 +443,42 @@ class FMail {
             $head .= "X-Priority: " . $this->XPriority . "$this->rn";
             $head .= "X-Mailer: " . $this->XMailer . "$this->rn";
             $head .= "Mime-Version: " . $this->MimeVersion . "$this->rn";
-            $head .= "Mime-Version: 1.0".$this->rn;
             $head .= "Reply-To: " . $this->from . "$this->rn";
 
             if (!$this->usemail) $head .= "Subject: " . $this->subject . "$this->rn";
             if ($this->files) {
-                $head .= "Content-Type: " . $this->ContentType[1] . ";\n\tboundary=\"----=_NextPart_000_0001_FYN$un\"$this->rn";
+                $boundary = '----=_NextPart_000_0001_FYN' . $un;
+                $head .= "Content-Type: " . $this->ContentType[1] . ";\n\tboundary=\"$boundary\"$this->rn";
                 $head .= "Importance: Normal$this->rn";
                 $head .= "This is a multi-part message in MIME format.$this->rn";
-                $message = "------=_NextPart_000_0001_FYN$un" . "$this->rn";
+                $message = "--$boundary$this->rn";
                 $message .= "Content-Type: " . $this->ctype . "; charset=" . $this->charset . "$this->rn";
                 $message .= "Content-Transfer-Encoding: " . $this->encoding . "$this->rn";
                 $message .= "$this->rn";
                 $message .= $this->message . "$this->rn";
                 foreach ($this->files as $num => $file) {
                     $message .= "$this->rn";
-                    $message .= "------=_NextPart_000_0001_FYN$un" . "$this->rn";
+                    $message .= "--$boundary$this->rn";
                     $message .= "Content-Type: " . $file['ctype'] . "; name=\"" . $file['name'] . "\"$this->rn";
-                    $message .= "Content-Transfer-Encoding: " . $this->Encoding[1] . "\n";
-                    if ($file['cid']) $message .= "Content-ID: <" . $file['cid'] . ">$this->rn";
-                    else $message .= "Content-Disposition: attachment;\n\tfilename=\"" . $file['name'] . "\"$this->rn";
-                    $message .= "$this->rn.";
-                    $message .= ".";
-
-                    $message .= $file['body'];
+                    $message .= "Content-Transfer-Encoding: " . $this->Encoding[1] . "$this->rn";
+                    if ($file['cid']) {
+                        $message .= "Content-ID: <" . $file['cid'] . ">$this->rn";
+                        $message .= "Content-Disposition: inline$this->rn";
+                    }
+                    else {
+                        $message .= "Content-Disposition: attachment;\n\tfilename=\"" . $file['name'] . "\"$this->rn";
+                    }
+                    $message .= "$this->rn";
+                    $message .= $file['body'] . "$this->rn";
                 }
+                $message .= "--$boundary--$this->rn";
             }
             else {
                 $head .= "Content-Type: " . $this->ctype . "; charset=" . $this->charset . "$this->rn";
                 $head .= "Content-Transfer-Encoding: " . $this->encoding . "$this->rn";
                 $message = $this->message . "$this->rn";
             }
-            //отправка письма
+            //send the message
             $sz = sizeof($this->to);
             if ($sz > $this->maxrecipients || $addbcc) {
                 $rcpt = $this->to_sock;
@@ -480,9 +488,7 @@ class FMail {
                         $to_sock = array_slice($this->to, $offset, $this->maxrecipients);
                         $offset += $this->maxrecipients;
                         $to = join(', ', $to_sock);
-                        $tto = array_diff($this->to, $to_sock);
-                        $ton = join(', ', $tto);
-                        $heads = "To: " . $ton . "$this->rn" . $head;
+                        $heads = "To: " . $to . "$this->rn" . $head;
                         if (@mail($to, $this->subject, $message, $heads)) $this->setLog('Sending mail to: ' . $to . " - OK.");
                         else {
                             $this->getError('send', __LINE__, "Sending to: $to - ERROR!");
@@ -582,20 +588,20 @@ class FMail {
     }
 
     /**
-     * Возвращаем список писем в папке IMAP
-     * @param string $folder имя папки
-     * @param int $start - Номер сообщения с которого начинаем читать папку
-     * @param int $count - количество возвращаемых записей
-     * Возвращает массив с ключами:
-     *      'sum'           - общее количество писем в папке
-     *      'count'         - запрошенное количество возвращаемых писем
-     *      'real_count'    - реальное количество возвращаемых писем
-     *      'start'         - Номер сообщения с которого начинаем читать папку
-     *      'end'           - Номер сообщения последнего возвращаемого письма
+     * Returns the list of messages in an IMAP folder
+     * @param string $folder folder name
+     * @param int $start - message number to start reading the folder from
+     * @param int $count - number of records to return
+     * Returns an array with the keys:
+     *      'sum'           - total number of messages in the folder
+     *      'count'         - requested number of messages to return
+     *      'real_count'    - actual number of messages returned
+     *      'start'         - message number to start reading the folder from
+     *      'end'           - number of the last message returned
      *      'error'         - false
-     * Если произошла ошибка, то возвращает массив с ключами:
+     * If an error occurs, returns an array with the keys:
      *      'error'         - true
-     *      'error_info'    - информация об ошибке
+     *      'error_info'    - error information
      * @return array
      */
     public function read_folder ($folder = '', $start = 0, $count = 0) {
@@ -657,42 +663,42 @@ class FMail {
     }
 
     /**
-     * Возврат списка писем в почтовом ящике по заданным параметрам
-     * @param string $type - параметры поиска сообщений. Могут принимать следующий вид:
-     *      ALL                 - возвращать все сообщения, соответствующие остальным критериям
-     *      ANSWERED            - сообщения с выставленным флагом \\ANSWERED
-     *      BCC "string"        - сообщения в поле Bcc: которых присутствует "string"
-     *      BEFORE "date"       - сообщения с Date: до "date"
-     *      BODY "string"       - сообщения содержащие "string" в теле
-     *      CC "string"         - сообщения в поле Cc: которых присутствует "string"
-     *      DELETED             - удаленные сообщения
-     *      FLAGGED             - сообщения с установленным флагом \\FLAGGED (иногда называют "Срочное" или "Важное")
-     *      FROM "string"       - сообщения в поле From: которых присутствует "string"
-     *      KEYWORD "string"    - сообщения с ключевым словом "string"
-     *      NEW                 - новые сообщения
-     *      OLD                 - старые сообщения
-     *      ON "date"           - сообщения с Date: равным "date"
-     *      RECENT              - означает сообщения с выставленным флагом \\RECENT
-     *      SEEN                - прочтенные сообщения (установлен флаг \\SEEN)
-     *      SINCE "date"        - сообщения с Date: после "date"
-     *      SUBJECT "string"    - сообщения в поле Subject: которых присутствует "string"
-     *      TEXT "string"       - сообщения с текстом "string"
-     *      TO "string"         - сообщения в поле To: которых присутствует "string"
-     *      UNANSWERED          - неотвеченные сообщения
-     *      UNDELETED           - не удаленные сообщения
-     *      UNFLAGGED           - сообщения без установленных флагов
-     *      UNKEYWORD "string"  - сообщения, не имеющие ключевого слова "string"
-     *      UNSEEN              - непрочтенные сообщения
-     * При запросе в параметрах даты, она должна соответствовать формату: date("j F Y");
-     * @param bool $get_uid - вернуть UID сообщений вместо номеров
-     * Возвращает массив с ключами:
-     *      'mail_sum'      - общее количество писем в папке
-     *      'count'         - количество писем, соответствующих заданным параметрам
-     *      'mails'         - массив номеров сообщений или UID, соответствующих заданным параметрам
+     * Returns the list of messages in the mailbox matching the given criteria
+     * @param string $type - message search criteria. Can take the following form:
+     *      ALL                 - return all messages matching the other criteria
+     *      ANSWERED            - messages with the \\ANSWERED flag set
+     *      BCC "string"        - messages whose Bcc: field contains "string"
+     *      BEFORE "date"       - messages with Date: before "date"
+     *      BODY "string"       - messages containing "string" in the body
+     *      CC "string"         - messages whose Cc: field contains "string"
+     *      DELETED             - deleted messages
+     *      FLAGGED             - messages with the \\FLAGGED flag set (sometimes called "Urgent" or "Important")
+     *      FROM "string"       - messages whose From: field contains "string"
+     *      KEYWORD "string"    - messages with the keyword "string"
+     *      NEW                 - new messages
+     *      OLD                 - old messages
+     *      ON "date"           - messages with Date: equal to "date"
+     *      RECENT              - messages with the \\RECENT flag set
+     *      SEEN                - read messages (the \\SEEN flag is set)
+     *      SINCE "date"        - messages with Date: after "date"
+     *      SUBJECT "string"    - messages whose Subject: field contains "string"
+     *      TEXT "string"       - messages containing "string" in the text
+     *      TO "string"         - messages whose To: field contains "string"
+     *      UNANSWERED          - unanswered messages
+     *      UNDELETED           - undeleted messages
+     *      UNFLAGGED           - messages without any flags set
+     *      UNKEYWORD "string"  - messages without the keyword "string"
+     *      UNSEEN              - unread messages
+     * When passing a date parameter, it must match the format: date("j F Y");
+     * @param bool $get_uid - return message UIDs instead of numbers
+     * Returns an array with the keys:
+     *      'mail_sum'      - total number of messages in the folder
+     *      'count'         - number of messages matching the given criteria
+     *      'mails'         - array of message numbers or UIDs matching the given criteria
      *      'error'         - false
-     * Если произошла ошибка, то возвращает массив с ключами:
+     * If an error occurs, returns an array with the keys:
      *      'error'         - true
-     *      'error_info'    - информация об ошибке
+     *      'error_info'    - error information
      * @return array
      */
     public function receive ($type = 'all', $get_uid = false) {
@@ -718,34 +724,34 @@ class FMail {
     }
 
     /**
-     * Получение данных о письме по номеру письма
-     * @param $mid - номер письма в папке
-     * @param bool $mark_as_seen - пометить письмо как прочтённое (true - да, false - нет)
-     * @param bool $show_inline - показать изображения в теле письма
-     * Возвращается массив с ключами:
-     *      'mid'               - номер сообщения
-     *      'header'            - заголовки сообщения (объект)
-     *      'content-encoding'  - кодировка сообщения
-     *      'encoding-type'     - тип кодировки сообщения
-     *      'subject'           - тема сообщения
-     *      'message'           - массив полей сообщения
+     * Retrieves message data by message number
+     * @param $mid - message number in the folder
+     * @param bool $mark_as_seen - mark the message as read (true - yes, false - no)
+     * @param bool $show_inline - show images embedded in the message body
+     * Returns an array with the keys:
+     *      'mid'               - message number
+     *      'header'            - message headers (object)
+     *      'content-encoding'  - message encoding
+     *      'encoding-type'     - message encoding type
+     *      'subject'           - message subject
+     *      'message'           - array of message fields
      *      'error'             - false
-     * Массив полей сообщения имеет следующие ключи:
-     *      'header'            - заголовок сообщения (строка)
-     *      'body'              - текст (тело) сообщения
-     *      'mime'              - mime-type сообщения (если есть)
-     *      'attach'            - массив вложений соостоящий из массивов данных о вложениях
-     * Массив данных о вложении имеет следующие ключи:
-     *      'mime'              - mime-type вложения
-     *      'name'              - имя вложения (имя файла)
-     *      'content-type'      - тип содержимого
-     *      'content-encoding'  - кодировка содержимого
-     *      'content-disposition' - расположение вложения в письме (inline - в теле письма, attach - вложено отдельным файлом)
-     *      'size'              - размер вложения
-     *      'body'              - тело вложения
-     * Если произошла ошибка, то возвращает массив с ключами:
+     * The message fields array has the following keys:
+     *      'header'            - message header (string)
+     *      'body'              - message text (body)
+     *      'mime'              - message mime-type (if any)
+     *      'attach'            - array of attachments, each an array of attachment data
+     * The attachment data array has the following keys:
+     *      'mime'              - attachment mime-type
+     *      'name'              - attachment name (file name)
+     *      'content-type'      - content type
+     *      'content-encoding'  - content encoding
+     *      'content-disposition' - attachment placement in the message (inline - in the message body, attach - attached as a separate file)
+     *      'size'              - attachment size
+     *      'body'              - attachment body
+     * If an error occurs, returns an array with the keys:
      *      'error'         - true
-     *      'error_info'    - информация об ошибке
+     *      'error_info'    - error information
      * @return array
      */
     public function read_mail ($mid, $mark_as_seen = true, $show_inline = false) {
@@ -816,10 +822,10 @@ class FMail {
     }
 
     /**
-     * Получение данных о письме по UID письма
-     * Функция аналогична функции read_mail()
-     * @param $uid - номер письма в папке
-     * @param bool $mark_as_seen - пометить письмо как прочтённое (true - да, false - нет)
+     * Retrieves message data by message UID
+     * This function is analogous to read_mail()
+     * @param $uid - message number in the folder
+     * @param bool $mark_as_seen - mark the message as read (true - yes, false - no)
      * @return array
      */
     public function read_mail_UID ($uid, $mark_as_seen = true) {
@@ -855,24 +861,24 @@ class FMail {
     ////////////////////////////////////////////////////////////////
 
     /**
-     * Создаём массив получателей письма
-     * Функцию можно вызывать несколько раз с разными параметрами
-     * При каждом вызове функции переданные адреса накапливаются в массиве $this->to
-     * Для очистки массива получателей пользуйтесь функцией clearTo()
+     * Builds the array of message recipients
+     * The function can be called multiple times with different parameters
+     * Each call accumulates the passed addresses in the $this->to array
+     * Use the clearTo() function to clear the recipients array
      *
-     * @param mixed $to - адрес получателя письма, может быть задан как строками, так и массивами
+     * @param mixed $to - recipient address, can be given as a string or as an array
      *
-     * 1. Использование параметра $to как строки
-     * 1.1. в строке передаётся один адрес получателя (можно использовать дополнительный параметр функции $username)
-     * 1.2. в строке передаётся несколько адресов, адреса должны быть разделены запятой (,) или точкой с запятой (;)
+     * 1. Using the $to parameter as a string
+     * 1.1. the string contains a single recipient address (the optional $username parameter can be used)
+     * 1.2. the string contains several addresses, separated by a comma (,) or semicolon (;)
      *
-     * 2. Использование параметра $to как массива
-     * 2.1. передаётся одномерный массив адресов получателей письма
-     * 2.2. передаётся массив ассоциативных массивов адресов ('mail') и имён получателей ('username')
-     *      $to = array(array('mail'=>'адрес получателя 1', 'username'=>'имя получателя 1'), array('mail'=>'адрес получателя 2', 'username'=>'имя получателя 2'));
-     * 2.3. можно передавать смешанный массив данных как п.2.1. и п.2.2.
+     * 2. Using the $to parameter as an array
+     * 2.1. a one-dimensional array of recipient addresses is passed
+     * 2.2. an array of associative arrays with addresses ('mail') and recipient names ('username') is passed
+     *      \$to = array(array('mail'=>'recipient address 1', 'username'=>'recipient name 1'), array('mail'=>'recipient address 2', 'username'=>'recipient name 2'));
+     * 2.3. a mixed array combining 2.1 and 2.2 can also be passed
      *
-     * @param mixed $username - имя пользователя (используется только при передаче параметров согласно п.1.1.)
+     * @param mixed $username - user name (used only when passing parameters as in 1.1)
      *
      */
     public function setTo ($to, $username = false) {
@@ -971,24 +977,24 @@ class FMail {
     }
 
     /**
-     * Создаём массив скрытых получателей письма
-     * Функцию можно вызывать несколько раз с разными параметрами
-     * При каждом вызове функции переданные адреса накапливаются в массиве $this->bcc
-     * Для очистки массива получателей пользуйтесь функцией clearBcc()
+     * Builds the array of hidden (Bcc) message recipients
+     * The function can be called multiple times with different parameters
+     * Each call accumulates the passed addresses in the $this->bcc array
+     * Use the clearBcc() function to clear the recipients array
      *
-     * @param mixed $bcc - адрес получателя письма, может быть задан как строками, так и массивами
+     * @param mixed $bcc - recipient address, can be given as a string or as an array
      *
-     * 1. Использование параметра $bcc как строки
-     * 1.1. в строке передаётся один адрес получателя (можно использовать дополнительный параметр функции $username)
-     * 1.2. в строке передаётся несколько адресов, адреса должны быть разделены запятой (,) или точкой с запятой (;)
+     * 1. Using the $bcc parameter as a string
+     * 1.1. the string contains a single recipient address (the optional $username parameter can be used)
+     * 1.2. the string contains several addresses, separated by a comma (,) or semicolon (;)
      *
-     * 2. Использование параметра $bcc как массива
-     * 2.1. передаётся одномерный массив адресов получателей письма
-     * 2.2. передаётся массив ассоциативных массивов адресов ('mail') и имён получателей ('username')
-     *      $bcc = array(array('mail'=>'адрес получателя 1', 'username'=>'имя получателя 1'), array('mail'=>'адрес получателя 2', 'username'=>'имя получателя 2'));
-     * 2.3. можно передавать смешанный массив данных как п.2.1. и п.2.2.
+     * 2. Using the $bcc parameter as an array
+     * 2.1. a one-dimensional array of recipient addresses is passed
+     * 2.2. an array of associative arrays with addresses ('mail') and recipient names ('username') is passed
+     *      \$bcc = array(array('mail'=>'recipient address 1', 'username'=>'recipient name 1'), array('mail'=>'recipient address 2', 'username'=>'recipient name 2'));
+     * 2.3. a mixed array combining 2.1 and 2.2 can also be passed
      *
-     * @param mixed $username - имя пользователя (используется только при передаче параметров согласно п.1.1.)
+     * @param mixed $username - user name (used only when passing parameters as in 1.1)
      */
     public function setBcc ($bcc, $username = false) {
         if (is_array($bcc)) {
@@ -1038,9 +1044,9 @@ class FMail {
     }
 
     /**
-     * Задание адреса отправителя
-     * @param string $from - адрес отправителя письма
-     * @param string $username - имя пользователя
+     * Sets the sender address
+     * @param string $from - sender address
+     * @param string $username - user name
      * @return bool
      */
     public function setFrom ($from, $username = '') {
@@ -1059,7 +1065,7 @@ class FMail {
     }
 
     /**
-     * Залание темы сообщения
+     * Sets the message subject
      * @param string $subject
      * @return bool
      */
@@ -1075,7 +1081,7 @@ class FMail {
     }
 
     /**
-     * Задание простого текстового сообщения
+     * Sets a plain text message
      * @param string $message
      * @return bool
      */
@@ -1087,7 +1093,7 @@ class FMail {
     }
 
     /**
-     * Задание сообщения HTML вида
+     * Sets an HTML-formatted message
      * @param string $message
      * @return bool
      */
@@ -1102,8 +1108,8 @@ class FMail {
     }
 
     /**
-     * Создание текстового сообщения из HTML файла
-     * @param string $filepath - путь к файлу HTML
+     * Builds a text message from an HTML file
+     * @param string $filepath - path to the HTML file
      * @return bool
      */
     public function setMessageFromHTML ($filepath) {
@@ -1131,8 +1137,8 @@ class FMail {
     }
 
     /**
-     * Сохдание письма из HTML файла
-     * @param string $filepath - путь к файлу HTML
+     * Builds a message from an HTML file
+     * @param string $filepath - path to the HTML file
      * @return bool
      */
     public function setHTMLfile ($filepath) {
@@ -1169,7 +1175,6 @@ class FMail {
             else {
                 $path = dirname($filepath);
             }
-            //$punct = rand(100, 999);
             if (preg_match_all("/<link[^>]+href\s?=\s?\\\?\"?\'?([^\>\"\'\s]+\.css)\s?\\\?\"?\'?[^>]*>/is", $file_content, $styles)) {
                 $style = array_unique($styles[1]);
                 foreach ($styles[0] as $num=>$link) {
@@ -1233,7 +1238,7 @@ class FMail {
             if (preg_match_all("/(background:\s*[^\(]*url\()(.+)(\))/isU", $file_content, $images)) {
                 $img = array_merge($img, array_unique($images[2]));
             }
-            // Подключение скриптов отдельным файлом
+            // Include scripts as a separate file
             if (preg_match_all("/<script[^.]+src\s?=\s?\\\?\"?\'?([^>\"\'\s]+)\s?\\\?\"?\'?[^>]*>/is", $file_content, $images)) {
                 $img = array_merge($img, array_unique($images[1]));
             }
@@ -1335,7 +1340,6 @@ class FMail {
             $nl = '';
             if (preg_match_all("/<pre([^>]*)>(.+)<\/pre>/isU", $file_content, $match)) {
                 $nl = 'FYNPUNKTFMailPHP'.rand(100,999);
-                //$replase = array();
                 foreach ($match[0] as $num=>$line) {
                     $pre = preg_replace("/\r/", "", $line);
                     $pre = preg_replace("/\n/", $nl, $pre);
@@ -1358,8 +1362,8 @@ class FMail {
     }
 
     /**
-     * Добавление файлов к письму
-     * @param string $filepath - путь к файлу
+     * Attaches files to the message
+     * @param string $filepath - path to the file
      * @return bool
      */
     public function setFile ($filepath) {
@@ -1367,10 +1371,10 @@ class FMail {
         if (file_exists($filepath) && is_file($filepath)) {
             $file = file_get_contents($filepath);
             $this->files[$i]['name'] = basename($filepath);
-            if (is_callable("mime_content_type")) {
+            if (is_callable('mime_content_type')) {
                 $this->files[$i]['ctype'] = mime_content_type($filepath);
             }
-            if ($this->files[$i]['ctype'] = 'text/plain') {
+            if (empty($this->files[$i]['ctype']) || $this->files[$i]['ctype'] === 'text/plain') {
                 $type = getimagesize($filepath);
                 if ($type[2] >= 1 && $type[2] <= 4) {
                     switch ($type[2]) {
@@ -1414,7 +1418,7 @@ class FMail {
     }
 
     /**
-     * Установка логина пользователя
+     * Sets the user login
      * @param string $login
      */
     public function setLogin ($login = '') {
@@ -1422,7 +1426,7 @@ class FMail {
     }
 
     /**
-     * Установка пароля пользователя
+     * Sets the user password
      * @param string $password
      */
     public function setPassword ($password = '') {
@@ -1430,7 +1434,7 @@ class FMail {
     }
 
     /**
-     * Установка адреса сервера при работе через сокет
+     * Sets the server address for socket mode
      * @param string $server
      */
     public function setServer ($server = 'localhost') {
@@ -1438,7 +1442,7 @@ class FMail {
     }
 
     /**
-     * Установка порта для подключения через сокет
+     * Sets the port for socket connections
      * @param int $port
      */
     public function setPort ($port = 25) {
@@ -1447,7 +1451,7 @@ class FMail {
     }
 
     /**
-     * Установка порта для подключения IMAP
+     * Sets the port for IMAP connections
      * @param int $port
      */
     public function setImapPort ($port = 143) {
@@ -1456,8 +1460,8 @@ class FMail {
     }
 
     /**
-     * Установка типа подключения к серверу для получения почты
-     * По умолчанию и рекомендуется imap, можно использовать pop3, но сразу сокращается функциональность
+     * Sets the connection type used to retrieve mail
+     * imap is the default and recommended value; pop3 can be used but with reduced functionality
      * @param string $type
      */
     public function setImapType ($type = 'imap') {
@@ -1466,8 +1470,8 @@ class FMail {
     }
 
     /**
-     * Установка параметра подключения IMAP с использованием SSL
-     * @param bool $ssl - использовать или нет (true|false)
+     * Sets the IMAP connection parameter for using SSL
+     * @param bool $ssl - whether to use it (true|false)
      */
     public function setImapSSL ($ssl = false) {
         if ($ssl === true) {
@@ -1481,7 +1485,7 @@ class FMail {
     }
 
     /**
-     * Установка домена с которогоо отправляем письма
+     * Sets the domain messages are sent from
      * @param string $domain
      */
     public function setDomain ($domain = '') {
@@ -1490,15 +1494,23 @@ class FMail {
     }
 
     /**
-     * Установка времени ожидания подключения к сокету
+     * Sets the socket connection timeout
      * @param int $timeout
      */
     public function setTimeout ($timeout = 30) {
-        if (is_int($timeout)) $this->timeout = $timeout;
+        if (is_numeric($timeout)) $this->timeout = (int) $timeout;
     }
 
     /**
-     * Установка параметра использования стандартной функции mail
+     * Enables/disables STARTTLS negotiation when connecting via socket
+     * @param bool $flag
+     */
+    public function setStartTLS ($flag = true) {
+        $this->starttls = (bool)$flag;
+    }
+
+    /**
+     * Sets whether to use the standard mail() function
      * @param bool $usemail
      */
     public function setMailUse ($usemail = true) {
@@ -1506,7 +1518,7 @@ class FMail {
     }
 
     /**
-     * Установка метода авторизации на сервере при подключении через сокет
+     * Sets the authentication method used on the server when connecting via socket
      * @param string $auth
      */
     public function setAuth ($auth = 'LOGIN') {
@@ -1521,7 +1533,7 @@ class FMail {
     }
 
     /**
-     * Установка максимального количества получателей в одном письме
+     * Sets the maximum number of recipients per message
      * @param int $num
      */
     public function setMaxRecipient ($num = 1) {
@@ -1530,9 +1542,9 @@ class FMail {
     }
 
     /**
-     * Логирование действий
-     * @param string $message - сообщение
-     * @param integer $type - тип лога (0 - функции, 1 - данные, 2 - ошибки)
+     * Logs an action
+     * @param string $message - message
+     * @param integer $type - log type (0 - actions, 1 - data, 2 - errors)
      */
     private function setLog ($message = '', $type = 0) {
         $tm = date('d.m.Y (H:i:s)') . ': '.$message;
@@ -1552,13 +1564,13 @@ class FMail {
     }
 
     /**
-     * Установка кодировки письма
-     * Могут передаваться параметры:
+     * Sets the message charset
+     * The following values can be passed:
      * WIN - windows-1251
      * KOI - koi8-r
      * ISO - iso-8859-1
      * UTF8 - utf-8
-     * По умолчанию используется UTF8
+     * UTF8 is used by default
      * @param string $enc
      */
     public function setCharset ($enc = 'UTF8') {
@@ -1578,7 +1590,7 @@ class FMail {
     }
 
     /**
-     * Влючение отладочных функций класса
+     * Enables the class debug functions
      * @param bool $debug
      */
     public function setDebug ($debug = false) {
@@ -1586,7 +1598,7 @@ class FMail {
     }
 
     /**
-     * Установка папки для работы с почтой IMAP
+     * Sets the folder to use for IMAP operations
      * @param $folder
      * @return bool
      */
@@ -1606,23 +1618,23 @@ class FMail {
     }
 
     /**
-     * Установка флагов подключения
+     * Sets connection flags
      * /imap
      * /pop3
-     * /ssl             использовать SSL для шифрования сессии
-     * /user=user       имя пользователя для входа на сервер
-     * /authuser=user   удаленный пользователь для аутентификации; если указано, то это будет тот пользователь, чей пароль используется (например administrator)
-     * /anonymous       удаленный доступ под анонимным пользователем
-     * /debug           записывать телеметрию протокола в специальный лог-файл приложения
-     * /secure          не передавать пароль по сети в виде нешифрованного текста
-     * /norsh           не использовать rsh или ssh для установки преавторизованной сессии IMAP
-     * /validate-cert   проверять сертификаты серверов TLS/SSL (поведение по умолчанию)
-     * /novalidate-cert не проверять сертификаты от серверов TLS/SSL. полезно для серверов с самоподписанным сертификатом
-     * /tls             принудительно использовать start-TLS для шифрования сессии и отвергать соединения с серверами его не поддерживающими
-     * /notls           не применять start-TLS для шифрования сессии, даже если сервер его поддерживает
-     * /readonly        подключение только для чтения
-     * @param string $flag - флаг из перечня выше (см. документацию к функции imap_open)
-     * @param bool $clear  - очистить старые флаги (true|false)
+     * /ssl             use SSL to encrypt the session
+     * /user=user       user name to log in to the server
+     * /authuser=user   remote user for authentication; if given, this is the user whose password is used (e.g. administrator)
+     * /anonymous       remote access as an anonymous user
+     * /debug           record protocol telemetry to the application's dedicated log file
+     * /secure          do not send the password over the network as unencrypted text
+     * /norsh           do not use rsh or ssh to establish a pre-authenticated IMAP session
+     * /validate-cert   validate TLS/SSL server certificates (default behavior)
+     * /novalidate-cert do not validate TLS/SSL server certificates; useful for servers with a self-signed certificate
+     * /tls             force the use of start-TLS to encrypt the session and reject connections to servers that do not support it
+     * /notls           do not use start-TLS to encrypt the session, even if the server supports it
+     * /readonly        read-only connection
+     * @param string $flag - one of the flags listed above (see imap_open() documentation)
+     * @param bool $clear  - clear the old flags (true|false)
      */
     public function setImapFlags ($flag = '', $clear = false) {
         $flags_array = array('anonymous', 'debug', 'secure', 'norsh', 'validate-cert', 'novalidate-cert', 'tls', 'notls', 'readonly');
@@ -1660,7 +1672,7 @@ class FMail {
     ////////////////////////////////////////////////////////////////
 
     /**
-     * Подключение через сокет для отправки сообщения
+     * Connects via socket to send a message
      * @return bool
      */
     private function getSocketConnect () {
@@ -1669,8 +1681,10 @@ class FMail {
         if (!$this->socket) {
             $pr_errno = print_r($errno,true);
             $pr_errstr = print_r($errstr, true);
-            $pr_errno = Base::convertLine($pr_errno);
-            $pr_errstr = Base::convertLine($pr_errstr);
+            if (class_exists('Toropyga\\Base')) {
+                $pr_errno = Base::convertLine($pr_errno);
+                $pr_errstr = Base::convertLine($pr_errstr);
+            }
             $this->getError('getSocket', __LINE__, 'Unable to connect to: '.$this->server.':'.$this->port."\n".$pr_errno."\n".$pr_errstr);
             return false;
         }
@@ -1693,9 +1707,43 @@ class FMail {
                 if (!$res = $this->getCode(250)) return false;
             }
             $log .= $res;
+
+            // If the connection is not yet encrypted (server not given as ssl://) and the server
+            // advertised STARTTLS support in the EHLO response — negotiate encryption before authenticating
+            $already_secure = (bool) preg_match('/^(ssl|tls):\/\//i', $this->server);
+            if (!$already_secure && $this->starttls && stripos($res, 'STARTTLS') !== false) {
+                $this->setLog(">>> STARTTLS", 1);
+                fputs($this->socket, "STARTTLS$this->rn");
+                if ($res_tls = $this->getCode(220)) {
+                    $crypto_ok = @stream_socket_enable_crypto(
+                        $this->socket,
+                        true,
+                        STREAM_CRYPTO_METHOD_TLS_CLIENT
+                    );
+                    if (!$crypto_ok) {
+                        $this->getError('getSocketConnect', __LINE__, 'STARTTLS negotiation failed');
+                        $this->closeSocket();
+                        return false;
+                    }
+                    // After STARTTLS the greeting must be repeated (session state is reset)
+                    $this->setLog(">>> EHLO " . $this->mydomain . " (after STARTTLS)", 1);
+                    fputs($this->socket, "EHLO " . $this->mydomain . "$this->rn");
+                    if (!$res = $this->getCode(250)) return false;
+                    $log .= $res;
+                }
+                else {
+                    // The server advertised STARTTLS but did not respond with 220 — do not continue unencrypted
+                    // if authentication is required
+                    if ($this->auth && $this->login) {
+                        $this->getError('getSocketConnect', __LINE__, 'STARTTLS was advertised but rejected');
+                        $this->closeSocket();
+                        return false;
+                    }
+                }
+            }
             $this->setLog($log, 3);
             if ($this->auth && $this->login) {
-                # Авторизация
+                # Authentication
                 if (!$this->getSocketLogin()) return false;
             }
             return true;
@@ -1703,7 +1751,7 @@ class FMail {
     }
 
     /**
-     * Подключение к почтовому ящику IMAP
+     * Connects to the mailbox via IMAP
      * @return bool
      */
     private function getIMAPConnect () {
@@ -1719,7 +1767,9 @@ class FMail {
         if ($this->imap_flags) $imap_path .= "/".$this->imap_flags;
         if ($this->imap_folder) $imap_path = "{".$imap_path."}".$this->imap_folder;
         if (!$this->imap = imap_open($imap_path, $this->login, $this->password)) {
-            $this->getError('getIMAPConnect', __LINE__, 'Unable to connect to: '.$imap_path."\nUser: ".$this->login."\nPassword: ".$this->password."\n".imap_last_error());
+            // Mask the login and never output the password at all — not in errors, not in logs
+            $masked_login = $this->login ? substr($this->login, 0, 2).'***' : '(empty)';
+            $this->getError('getIMAPConnect', __LINE__, 'Unable to connect to: '.$imap_path."\nUser: ".$masked_login."\n".imap_last_error());
             return false;
         }
         $this->setLog("getIMAPConnect: $imap_path - OK");
@@ -1727,8 +1777,8 @@ class FMail {
     }
 
     /**
-     * Передача заголовков сокету при отправке письма
-     * @param bool $setmail - требуется ли отправка заголовка Mail from
+     * Sends headers to the socket when sending a message
+     * @param bool $setmail - whether the Mail from header needs to be sent
      * @return bool
      */
     private function getSocket($setmail = true) {
@@ -1761,7 +1811,7 @@ class FMail {
     }
 
     /**
-     * Аторизация пользователя при подключении через сокет для отправки сообщения
+     * Authenticates the user when connecting via socket to send a message
      * @return bool
      */
     private function getSocketLogin () {
@@ -1779,11 +1829,11 @@ class FMail {
                 else return false;
             }
             $log .= $res;
-            $this->setLog(">>> ".base64_encode($this->login), 1);
+            $this->setLog(">>> [LOGIN hidden]", 1);
             fputs($this->socket, base64_encode($this->login) . "$this->rn");
             if(!$res = $this->getCode(334)) return false;
             $log .= $res;
-            $this->setLog(">>> ".base64_encode($this->password), 1);
+            $this->setLog(">>> [PASSWORD hidden]", 1);
             fputs($this->socket, base64_encode($this->password) . "$this->rn");
             if(!$res = $this->getCode(235)) return false;
             $log .= $res;
@@ -1797,7 +1847,7 @@ class FMail {
             }
             $log .= $res;
             $auth_str = base64_encode(chr(0) . $this->login . chr(0) . $this->password);
-            $this->setLog(">>> $auth_str", 1);
+            $this->setLog(">>> [AUTH PLAIN credentials hidden]", 1);
             fputs($this->socket, $auth_str . "$this->rn");
             if(!$res = $this->getCode(235)) return false;
             $log .= $res;
@@ -1807,9 +1857,9 @@ class FMail {
     }
 
     /**
-     * Проверка ответа при соккетном соединении при отправке сообщения
-     * @param int $code - сравниваемый код ответа
-     * @param bool $exit - разорвать соединение при ошибке
+     * Checks the response over the socket connection when sending a message
+     * @param int $code - expected response code to compare against
+     * @param bool $exit - close the connection on error
      * @return mixed
      */
     private function getCode ($code = 200, $exit = true) {
@@ -1848,23 +1898,23 @@ class FMail {
     }
 
     /**
-     * Проверка строки адреса электронной почты
-     * @param string $to - проверяемый адрес
-     * @param bool $first - проверка первым регулярным выражением или вторым
+     * Validates an email address string
+     * @param string $to - address to validate
+     * @param bool $first - validate with the first regular expression or the second one
      * @return bool
      */
     public function getCheck ($to, $first = true) {
         if ($to) {
             if (!is_array($to)) {
                 if ($first) {
-                    if (!(preg_match('/^[A-z0-9&\'\.\-_\+]+@[A-z0-9\-]+\.([A-z0-9\-]+\.)*?[A-z]+$/is', $to))) {
+                    if (!(preg_match('/^[A-Za-z0-9&\'\.\-_\+]+@[A-Za-z0-9\-]+\.([A-Za-z0-9\-]+\.)*?[A-Za-z]+$/is', $to))) {
                         $this->getError('getCheck', __LINE__, "Incorrect mail adress: $to");
                         return false;
                     }
                     else return true;
                 }
                 else {
-                    if (!(preg_match('/^[A-z0-9_\-]+(([^(\s\(\)<>@,;:\\<>\.\[\])]|\.)[A-z0-9_\-]+)*@[A-z0-9_]+((\-|\.)[A-z0-9_]+)*\.[A-z]{2,}$/is', $to))) {
+                    if (!(preg_match('/^[A-Za-z0-9_\-]+(([^(\s\(\)<>@,;:\\<>\.\[\])]|\.)[A-Za-z0-9_\-]+)*@[A-Za-z0-9_]+((\-|\.)[A-Za-z0-9_]+)*\.[A-Za-z]{2,}$/is', $to))) {
                         $this->getError('getCheck', __LINE__, "Incorrect mail adress: $to");
                         return false;
                     }
@@ -1883,7 +1933,7 @@ class FMail {
     }
 
     /**
-     * Конвертация строки из кодировки WIN1251 в кодировку UTF8
+     * Converts a string from WIN1251 encoding to UTF8
      * @param string $str
      * @return string
      */
@@ -1911,7 +1961,7 @@ class FMail {
     }
 
     /**
-     * Конвертация строки из кодировки UTF8 в кодировку WIN1251
+     * Converts a string from UTF8 encoding to WIN1251
      * @param string $str
      * @return string
      */
@@ -1944,7 +1994,7 @@ class FMail {
     }
 
     /**
-     * Инициализация массива кодировки UTF8
+     * Initializes the UTF8 charset table
      */
     private function getChars () {
         $this->chars = array(
@@ -1976,7 +2026,7 @@ class FMail {
     }
 
     /**
-     * Конвертация HTML текста
+     * Converts HTML text
      * @param string $html
      * @return string
      */
@@ -2004,7 +2054,7 @@ class FMail {
     }
 
     /**
-     * Обработка ошибок скрипта
+     * Handles script errors
      * @param string $function
      * @param int $line
      * @param string $message
@@ -2012,11 +2062,15 @@ class FMail {
     private function getError ($function, $line, $message) {
         $this->setLog("getError");
         $this->setLog("Error in function $function. In line: $line. $message", 2);
-        $error = '<span style="color:#FF0000">Error in function <b>'.$function."</b></span>\n";
-        $error .= '<span style="color:#3300FF">In line: <b>'.$line."</b></span>\n";
-        $error .= $message."\n";
+        // $function and $line are set by the class code itself and are safe,
+        // but $message may contain user-supplied data (email, print_r, etc.) — escape it
+        $safe_function = htmlspecialchars((string)$function, ENT_QUOTES, 'UTF-8');
+        $safe_message  = htmlspecialchars((string)$message, ENT_QUOTES, 'UTF-8');
+        $error = '<span style="color:#FF0000">Error in function <b>'.$safe_function."</b></span>\n";
+        $error .= '<span style="color:#3300FF">In line: <b>'.(int)$line."</b></span>\n";
+        $error .= $safe_message."\n";
         if ($this->debug) {
-            if (defined("SITE_CHARSET")) $CODE = SITE_CHARSET;
+            if (defined('SITE_CHARSET')) $CODE = constant('SITE_CHARSET');
             else $CODE = 'utf-8';
             header("Content-Type: text/html; charset=".$CODE);
             echo nl2br($error);
@@ -2024,8 +2078,8 @@ class FMail {
     }
 
     /**
-     * Возврат записей логов
-     * @param int $param - параметры (0 - все логи, 1 - вызванные функции, 2 - переданные данные, 3 - ошибки, 4 - информационные сообщения)
+     * Returns log entries
+     * @param int $param - parameters (0 - all logs, 1 - actions called, 2 - data passed, 3 - errors, 4 - informational messages)
      * @return array
      */
     public function getLogs ($param = 0) {
@@ -2054,13 +2108,13 @@ class FMail {
 
 
     /**
-     * Декодирование строк вида =?utf-8?B?0KHQv9GA0LDQstC+0YfQvdC40Log0JHQmNCa?= в заголовках сообщения (письма)
-     * @param $string - строка для декодирования
-     * Возвращает массив с ключами:
-     *      'content-encoding'  - кодировка текста;
-     *      'encoding-type'     - используемое кодирование в исходной строке ('B' - base64, 'Q' - Quoted-printable);
-     *      'decoded-line'      - декодированная строка
-     *      'old-line'          - исходная строка;
+     * Decodes strings such as =?utf-8?B?0KHQv9GA0LDQstC+0YfQvdC40Log0JHQmNCa?= found in message (email) headers
+     * @param $string - string to decode
+     * Returns an array with the keys:
+     *      'content-encoding'  - text encoding;
+     *      'encoding-type'     - encoding used in the original string ('B' - base64, 'Q' - Quoted-printable);
+     *      'decoded-line'      - decoded string
+     *      'old-line'          - original string;
      * @return array
      */
     public function getSubjectDecode ($string) {
@@ -2089,7 +2143,7 @@ class FMail {
                                 foreach ($arr as $val) $row = str_replace("=".$var.$val,"%".$var.$val, $row);
                             }
                             $row = urldecode($row);
-                            $rows[$i] = utf8_encode($row);
+                            $rows[$i] = mb_convert_encoding($row, 'UTF-8', 'ISO-8859-1');
                         }
                     }
                 }
@@ -2099,7 +2153,7 @@ class FMail {
             $line = implode("", $rows);
             $cod = '';
             if (function_exists("mb_detect_encoding")) $cod = @mb_detect_encoding($line, array('utf-8', 'ascii', 'cp1251', 'KOI8-R', 'CP866', 'KOI8-U'), true);
-            if (!$cod && file_exists('NetContent.php')) {
+            if (!$cod && file_exists('NetContent.php') && class_exists('Toropyga\\Base')) {
                 $cod = Base::detect_encoding($line);
             }
             elseif (!$cod) $cod = @mb_detect_encoding($line, mb_detect_order(), true);
@@ -2112,8 +2166,8 @@ class FMail {
     }
 
     /**
-     * Получение списка папок IMAP
-     * @param string $folder - папка, относительно которой выбирается список, если не указано, то от корневой
+     * Retrieves the list of IMAP folders
+     * @param string $folder - folder to list relative to; if not specified, lists from the root
      * @return array
      */
     public function getImapFolders ($folder = '') {
@@ -2136,10 +2190,10 @@ class FMail {
     }
 
     /**
-     * Декодирование строки IMAP при работе с почтовыми ящиками
-     * Если имя ящика кирилицей или иной кодировке, отличной от ISO_8859-1, то возвращается строка вида '[Gmail]/&BBIEMAQ2BD0EPgQ1-'
-     * Для декодирования используем эту функцию
-     * @param string $line - строка для декодирования
+     * Decodes an IMAP string when working with mailboxes
+     * If the mailbox name is in Cyrillic or another encoding other than ISO_8859-1, a string like '[Gmail]/&BBIEMAQ2BD0EPgQ1-' is returned
+     * This function is used to decode it
+     * @param string $line - string to decode
      * @return string
      */
     public function imap_decode($line) {
@@ -2163,8 +2217,8 @@ class FMail {
     }
 
     /**
-     * Кодирование имени ящика кирилицей или в иной кодировке, отличной от ISO_8859-1 в формат вида '[Gmail]/&BBIEMAQ2BD0EPgQ1-'
-     * @param $line - строка для кодировки
+     * Encodes a mailbox name in Cyrillic or another encoding other than ISO_8859-1 into the format '[Gmail]/&BBIEMAQ2BD0EPgQ1-'
+     * @param $line - string to encode
      * @return string
      */
     public function imap_encode($line) {
@@ -2209,7 +2263,7 @@ class FMail {
     }
 
     /**
-     * Вспомогательная функция для декодирования строки функцией imap_decode()
+     * Helper function used by imap_decode() to decode a string
      * @param $line
      * @return string
      */
@@ -2240,8 +2294,8 @@ class FMail {
     }
 
     /**
-     * Вспомогательная функция для кодирования строки функцией imap_encode()
-     * @param $line - строка
+     * Helper function used by imap_encode() to encode a string
+     * @param $line - string
      * @return string
      */
     private function encode_b64imap($line) {
@@ -2259,8 +2313,8 @@ class FMail {
     }
 
     /**
-     * Определение кода символа для функций кодирования и декодирования строк IMAP
-     * @param $w - символ
+     * Determines the character code for the IMAP string encoding/decoding functions
+     * @param $w - character
      * @return string
      */
     private function encode_utf8_char($w) {
@@ -2282,7 +2336,7 @@ class FMail {
     ////////////////////////////////////////////////////////////////
 
     /**
-     * Очистка списка получателей
+     * Clears the recipients list
      */
     public function clearTo () {
         $this->to = array();
@@ -2291,7 +2345,7 @@ class FMail {
     }
 
     /**
-     * Очистка списка скрытых получателей
+     * Clears the hidden recipients (Bcc) list
      */
     public function clearBcc () {
         $this->bcc = array();
@@ -2299,14 +2353,14 @@ class FMail {
     }
 
     /**
-     * Очистка списка файлов
+     * Clears the attached files list
      */
     public function clearFiles () {
         $this->files = array();
     }
 
     /**
-     * Закрытие подключения через сокет
+     * Closes the socket connection
      */
     private function closeSocket () {
         $this->setLog("closeSocket");
