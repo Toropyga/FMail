@@ -2,7 +2,7 @@
 /**
  * INFO
  * +-----------------------------------------------------------------------+
- * | PHP Version 5 - 8                                                     |
+ * | PHP Version 7.0 or higher                                             |
  * +-----------------------------------------------------------------------+
  * | PHP Mail sender script                                                |
  * | Copyright (c) 2003-2026 Yuri Frantsevich                              |
@@ -18,7 +18,7 @@
  * | Author: Yuri Frantsevich <frantsevich@gmail.com>                      |
  * +-----------------------------------------------------------------------+
  *
- * $Id: FMail.php, v 7.0.2 2026/07/29 14:16
+ * $Id: FMail.php, v 7.0.3 2026/10/31
  */
 
 /**
@@ -26,7 +26,7 @@
  *
  * @name    Toropyga/FMail
  * @access  public
- * @version 7.0.2
+ * @version 7.0.3
  * @author  Yuri Frantsevich <frantsevich@gmail.com>
  * @charset UTF-8
  *
@@ -221,7 +221,7 @@ class FMail {
      * Script name
      * @var string
      */
-    private $XMailer        = 'FMail v7.0.2';
+    private $XMailer        = 'FMail v7.0.3';
 
     /**
      * Authentication types supported on SMTP servers

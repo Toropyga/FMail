@@ -2,10 +2,12 @@
 PHP Mail sender script
 
 ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
-![Version](https://img.shields.io/badge/version-v7.0.2-blue.svg)
-![PHP](https://img.shields.io/badge/php-v5.5_--_v8-blueviolet.svg)
+![Version](https://img.shields.io/badge/version-v7.0.3-blue.svg)
+![PHP](https://img.shields.io/badge/php-%3E%3D7.0-blueviolet.svg)
 
 Описание и примеры использования PHP класса отправки и получения почты FMail
+
+[История изменений](CHANGELOG.md) | [Описание релиза v7.0.3](RELEASE_NOTES_v7.0.3.md) | [English documentation](README.md)
 
 # Содержание
 
@@ -17,7 +19,7 @@ PHP Mail sender script
 # Общие понятия
 Класс FMail предназначен для отправки и получения электронных почтовых сообщений средствами PHP.
 Данный класс не является полноценной почтовой программой для работы с электронной почтой!
-Для работы необходимо наличие PHP версии 4 и выше.
+Для работы необходимы PHP версии 7.0 и выше, расширения `imap`, `fileinfo`, `iconv`, `mbstring` и Composer-пакет `toropyga/base`.
 
 # Возможности класса FMail
 Позволяет отправлять письма используя стандартную функцию PHP mail(), а также не используя данную функции напрямую подключаться к указанному почтовому серверу через сокет.
